@@ -40,3 +40,4 @@ Was folgt daraus — positiv wie negativ?
 ## Index
 
 - [0001. Architecture Decision Records verwenden](0001-use-architecture-decision-records.md)
+- [0002. Home-Verzeichnis der Companion-Benutzer unter /srv/companion](0002-companion-user-home-under-srv.md)

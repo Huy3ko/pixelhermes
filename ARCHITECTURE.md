@@ -2,9 +2,13 @@
 
 Dieses Dokument beschreibt die Zielarchitektur von PixelHermes und die
 Prinzipien, an denen sich jede spätere Entscheidung messen lassen muss.
-Stand Sprint 1 ist ausschließlich dieses Repository real vorhanden — alle
-hier beschriebenen Systemkomponenten sind **geplant, aber noch nicht
-angelegt**.
+
+Seit Sprint 3 (Runtime Foundation) existiert neben dem Repository auch
+die reale Linux-Systemstruktur (Verzeichnisse, Laufzeitabhängigkeiten,
+zwei Benutzer) — siehe [Systemstruktur](#systemstruktur) unten und
+[INSTALL.md](INSTALL.md) für die genauen Schritte. Es läuft weiterhin
+kein Dienst, es ist weiterhin keine Anwendung (Hermes, OpenWebUI, mem0,
+Humalike) installiert.
 
 ## Architekturprinzipien
 
@@ -80,34 +84,75 @@ Hosted") und werden nicht an Drittdienste ausgelagert.
 1. **Dieses Repository (`~/companion`, GitHub: `pixelhermes`)** —
    Dokumentation, Konfigurationsvorlagen, Skripte, Versionsgeschichte.
 2. **Systemstruktur (`/opt`, `/srv`, `/etc`, `/var/...`)** — der Ort, an
-   dem später tatsächlich Anwendungen, Daten, Konfiguration und Logs
-   liegen. In Sprint 1 existiert davon noch nichts.
+   dem tatsächlich Anwendungen, Daten, Konfiguration und Logs liegen.
+   Seit Sprint 3 real angelegt (siehe unten), aber noch ohne installierte
+   Anwendungen.
 
-## Geplante Systemstruktur
+## Systemstruktur
 
-| Pfad                          | Zweck                                                      | Status        |
-|---------------------------------|--------------------------------------------------------------|---------------|
-| `/opt/companion/`                 | Installierte Anwendungen/Software                            | geplant, leer |
-| `/srv/companion/`                  | Nutzdaten der Dienste (inkl. späterem Workspace)             | geplant, leer |
-| `/etc/companion/`                   | Systemweite Konfiguration                                    | geplant, leer |
-| `/var/log/companion/`                | Logdateien                                                    | geplant, leer |
-| `/var/backups/companion/`             | Backups                                                       | geplant, leer |
+| Pfad                          | Zweck                                              | Status |
+|---------------------------------|-------------------------------------------------------|--------|
+| `/opt/companion/`                 | Installierte Anwendungen/Software                     | angelegt, leer bis auf Unterstruktur |
+| `/opt/companion/skills/`            | geteilte Skills über Profile/Benutzer hinweg        | angelegt, leer |
+| `/opt/companion/tools/`              | geteilte Tools/Skripte                               | angelegt, leer |
+| `/opt/companion/templates/`           | geteilte Vorlagen                                     | angelegt, leer |
+| `/opt/companion/shared/`               | sonstige geteilte Ressourcen                           | angelegt, leer |
+| `/srv/companion/`                       | Nutzdaten der Dienste — enthält die Home-Verzeichnisse der Companion-Benutzer (siehe [ADR 0002](ADR/0002-companion-user-home-under-srv.md)) | angelegt |
+| `/etc/companion/`                        | Systemweite, PixelHermes-eigene Konfiguration (nicht Hermes-intern, siehe [docs/hermes/DEPLOYMENT.md](docs/hermes/DEPLOYMENT.md)) | angelegt, leer |
+| `/var/log/companion/`                     | Logdateien für PixelHermes-eigene Prozesse             | angelegt, leer |
+| `/var/backups/companion/`                  | Backups (u. a. Ziel für Kopien von `hermes backup`)   | angelegt, leer |
 
-Diese Verzeichnisse werden erst angelegt, wenn ein konkreter Dienst sie
-tatsächlich benötigt (Infrastructure as Code: erst im Repo definieren,
-dann anwenden) — nicht vorab, um keine unnötige Systemänderung
-vorzunehmen.
+Alle Verzeichnisse gehören `root:root`, Modus `755`; es liegen noch
+keine Anwendungsdaten darin. Details und ausgeführte Befehle:
+[INSTALL.md](INSTALL.md).
+
+## Benutzer
+
+Zwei unprivilegierte Linux-Benutzer angelegt, die später je einen
+Hermes-Agenten betreiben sollen — Namen entsprechen den in Sprint 1
+skizzierten Agenten:
+
+| Benutzer | UID | Home | Passwort-Login |
+|---|---|---|---|
+| `hermes_hugo` | 1001 | `/srv/companion/hermes_hugo` | gesperrt |
+| `hermes_christiane` | 1002 | `/srv/companion/hermes_christiane` | gesperrt |
+
+Home-Verzeichnis bewusst unter `/srv/companion/` statt `/home/`
+(Begründung: [ADR 0002](ADR/0002-companion-user-home-under-srv.md)).
+Noch **kein** Hermes, **kein** systemd-Service, **kein** Workspace,
+**keine** Datenbank für diese Benutzer — ausschließlich Konten und leere
+Home-Verzeichnisse.
+
+## Laufzeitabhängigkeiten (Runtime)
+
+Seit Sprint 3 auf dem Server installiert, als Vorbereitung für die
+spätere Hermes-Installation (siehe [docs/hermes/INSTALLATION.md](docs/hermes/INSTALLATION.md)
+für Hermes' eigene Anforderungen):
+
+- **Node.js** — offizielle Active-LTS-Version (24.x) über das
+  NodeSource-Repository, bewusst nicht das Debian-Paket
+  ("Upstream First").
+- **Python** — System-Python 3.13 plus `python3-venv`, `python3-pip`.
+- **uv** — offizieller Python-Paketmanager, systemweit unter
+  `/usr/local/bin` installiert (nicht nur für einen Nutzer), passend zu
+  "Python als Tool-Runtime".
+- **Basispakete** — `git`, `curl`, `wget`, `sqlite3`,
+  `build-essential`, `ca-certificates`, `jq`, `tree`, `htop`, `zip`,
+  `unzip` (bereits vorhanden bzw. ergänzt).
 
 ## Workspace
 
-Bewusst nicht definiert. Siehe "Workspace First" oben sowie
-[README.md](README.md), Abschnitt "Workspace".
+Wird nicht im Repository nachgebaut. Hermes bringt seine eigene
+Workspace-Konvention mit (`~/.hermes/`), dokumentiert in
+[docs/hermes/WORKSPACE.md](docs/hermes/WORKSPACE.md). Die realen
+Home-Verzeichnisse dafür existieren seit Sprint 3 (siehe "Benutzer"
+oben); der Workspace-Inhalt selbst entsteht erst mit der tatsächlichen
+Hermes-Installation.
 
-## Ausdrücklich nicht Teil von Sprint 1
+## Ausdrücklich nicht Teil von Sprint 1–3
 
 - Hermes, Hermes Workspace, OpenWebUI, mem0, Humalike, MCP, Skills
-- Workspaces, Agenten
-- Systembenutzer
+  (Hermes-eigene)
 - systemd-Services (laufend oder aktiviert)
 - Datenbanken
-- Änderungen an bestehender Systemkonfiguration
+- Persona-/Memory-Konfiguration

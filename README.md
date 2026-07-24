@@ -7,15 +7,17 @@ später die Infrastructure-as-Code-Definitionen.
 
 ## Status
 
-**Sprint 1: Foundation** — es existiert ausschließlich das
-Infrastruktur-Fundament dieses Repositories.
+**Sprint 3: Runtime Foundation** — Repository-Fundament (Sprint 1),
+Hermes-Architektur-Recherche (Sprint 2, siehe [docs/hermes/](docs/hermes/))
+und die reale Linux-Runtime (Node.js, Python/uv, Basispakete,
+Systemstruktur, zwei Benutzer) sind vorhanden.
 
-Ausdrücklich **nicht** Teil dieses Sprints:
+Ausdrücklich **weiterhin nicht** installiert/angelegt:
 
 - Hermes, Hermes Workspace, OpenWebUI, mem0, Humalike, MCP, Skills
-- Workspaces, Agenten, Benutzer, Datenbanken
-- jegliche Anwendungen oder Services
-- jegliche Änderungen am Linux-System
+  (Hermes-eigene)
+- Workspaces, Personas, Memory-Engine
+- systemd-Services, Datenbanken
 
 Details siehe [ROADMAP.md](ROADMAP.md).
 
@@ -59,17 +61,21 @@ pixelhermes/
 └── backups/
 ```
 
-Die spätere Linux-Systemstruktur (`/opt/companion`, `/srv/companion`,
-`/etc/companion`, `/var/log/companion`, `/var/backups/companion`) ist in
-[ARCHITECTURE.md](ARCHITECTURE.md) geplant, aber in diesem Sprint noch
-nicht angelegt.
+Die Linux-Systemstruktur (`/opt/companion`, `/srv/companion`,
+`/etc/companion`, `/var/log/companion`, `/var/backups/companion`) ist
+seit Sprint 3 real angelegt — siehe
+[ARCHITECTURE.md](ARCHITECTURE.md#systemstruktur) für Details und
+[INSTALL.md](INSTALL.md) für die genauen Schritte.
 
 ## Workspace
 
-Die Workspace-Struktur wird bewusst **nicht** in diesem Sprint
-definiert. Sie wird erst nach der Installation von Hermes Workspace
-analysiert und anschließend möglichst nah am Upstream übernommen (siehe
-[ARCHITECTURE.md](ARCHITECTURE.md), "Workspace First").
+Wird nicht im Repository nachgebaut. Hermes bringt seine eigene, bereits
+recherchierte Workspace-Konvention mit (`~/.hermes/`), siehe
+[docs/hermes/WORKSPACE.md](docs/hermes/WORKSPACE.md). Die realen
+Home-Verzeichnisse dafür existieren seit Sprint 3
+(`/srv/companion/hermes_hugo/`, `/srv/companion/hermes_christiane/`);
+befüllt wird der Workspace erst mit der tatsächlichen
+Hermes-Installation.
 
 ## Weiterführende Dokumente
 
