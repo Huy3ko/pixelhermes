@@ -1,0 +1,38 @@
+# PixelHermes - .gitignore
+
+# --- OS / editor junk ---
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# --- Secrets & local overrides ---
+*.env
+.env.*
+**/secrets/
+**/*.key
+**/*.pem
+**/*_secret*
+configs/local.*
+configs/**/*.local.*
+
+# --- Logs ---
+*.log
+
+# --- Backups ---
+# backups/ tracks structure only; real backup archives are host-local
+# artifacts and must never be committed.
+backups/*
+!backups/README.md
+
+# --- Python (tool runtime) ---
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# --- Runtime / build artifacts ---
+*.tmp
