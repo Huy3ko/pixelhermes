@@ -1,0 +1,42 @@
+# Architecture Decision Records
+
+Dieses Verzeichnis enthält die Architecture Decision Records (ADRs) von
+PixelHermes. Ein ADR hält eine einzelne, nicht-triviale
+Architekturentscheidung fest: Kontext, Entscheidung, Konsequenzen.
+
+## Wann ein ADR anlegen
+
+- Bei jeder Abweichung vom Upstream ("Upstream First" verlangt eine
+  Begründung).
+- Bei jeder Entscheidung, die schwer rückgängig zu machen ist oder
+  mehrere spätere Sprints beeinflusst.
+- Bei jeder Entscheidung zwischen mehreren plausiblen Alternativen.
+
+Triviale, leicht reversible Entscheidungen brauchen kein ADR.
+
+## Format
+
+Ein ADR pro Datei, fortlaufend nummeriert:
+`NNNN-kurzer-titel-in-kebab-case.md`
+
+```markdown
+# NNNN. Titel
+
+Status: Proposed | Accepted | Superseded by NNNN
+
+## Kontext
+
+Welches Problem oder welche Frage liegt vor?
+
+## Entscheidung
+
+Was wurde entschieden?
+
+## Konsequenzen
+
+Was folgt daraus — positiv wie negativ?
+```
+
+## Index
+
+- [0001. Architecture Decision Records verwenden](0001-use-architecture-decision-records.md)
