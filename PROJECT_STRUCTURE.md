@@ -18,8 +18,9 @@ pixelhermes/
 │                           festgehalten (Kontext, Entscheidung, Konsequenz).
 │
 ├── docs/                   Weiterführende Dokumentation
-│                           (Detaildokumente zu einzelnen Komponenten,
-│                           sobald diese existieren)
+│   └── hermes/               Recherche zur offiziellen Hermes-Agent-Doku
+│                             (Sprint 2), inkl. PixelHermes-Mapping je
+│                             Kapitel — siehe docs/hermes/OVERVIEW.md
 │
 ├── configs/                Konfigurationsvorlagen (Infrastructure as Code)
 │                           Werden später nach /etc/companion/ übertragen.
@@ -44,10 +45,12 @@ pixelhermes/
 
 ## Bewusst nicht vorhanden
 
-- **Kein `workspace/`-Verzeichnis.** Die Workspace-Struktur wird erst
-  nach Installation von Hermes Workspace analysiert und möglichst nah am
-  Upstream übernommen (siehe [ARCHITECTURE.md](ARCHITECTURE.md),
-  "Workspace First").
+- **Kein `workspace/`-Verzeichnis.** Die Workspace-Struktur wird nicht im
+  Repository nachgebaut, sondern von Hermes selbst mitgebracht
+  (`~/.hermes/`, dokumentiert in
+  [docs/hermes/WORKSPACE.md](docs/hermes/WORKSPACE.md)) und erst mit der
+  tatsächlichen Installation real angelegt (siehe
+  [ARCHITECTURE.md](ARCHITECTURE.md), "Workspace First").
 - **Keine Anwendungs-, Service- oder Datenbank-Verzeichnisse.** Diese
   entstehen erst, wenn die jeweilige Komponente tatsächlich eingeführt
   wird (siehe [ROADMAP.md](ROADMAP.md)).
