@@ -265,6 +265,19 @@ Kein Hermes-Kerndateien verändert — ausschließlich `hermes config set`,
 eine `honcho.json` am dokumentierten Ort, und die neuen, komplett
 separaten Systemdienste.
 
+### Drittanbieter-Erweiterungen (Policy-Präzisierung)
+
+Sprint 7 präzisierte "nur offizielle Erweiterungen" statt es
+aufzuweichen — siehe [ADR 0005](ADR/0005-third-party-extension-policy.md):
+Drittanbieter-Erweiterungen sind zulässig, wenn sie keine
+Hermes-Kerndateien ändern, ausschließlich dokumentierte
+Erweiterungsmechanismen nutzen, vollständig rückstandsfrei entfernbar
+sind, und klar als optional dokumentiert werden. Erste Anwendung dieser
+Regel: **Super Hermes** (`Cranot/super-hermes`, Drittanbieter-
+Skill-Paket) — vollständig geprüft, manuell installiert (kein
+Drittanbieter-Skript ausgeführt), Entfernbarkeit real getestet. Details:
+[docs/hermes/SUPER_HERMES.md](docs/hermes/SUPER_HERMES.md).
+
 ## Workspace
 
 Wird nicht im Repository nachgebaut. Hermes bringt seine eigene

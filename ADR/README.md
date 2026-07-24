@@ -43,3 +43,4 @@ Was folgt daraus — positiv wie negativ?
 - [0002. Home-Verzeichnis der Companion-Benutzer unter /srv/companion](0002-companion-user-home-under-srv.md)
 - [0003. Geteilte Dienste als eigene Systembenutzer unter /opt/companion](0003-shared-services-under-opt-companion.md)
 - [0004. Lokaler llama.cpp-Embedding-Server statt Cloud-Provider für Honcho](0004-local-embedding-server-for-honcho.md)
+- [0005. Bedingte Zulassung von Drittanbieter-Erweiterungen](0005-third-party-extension-policy.md)
