@@ -278,6 +278,18 @@ Skill-Paket) — vollständig geprüft, manuell installiert (kein
 Drittanbieter-Skript ausgeführt), Entfernbarkeit real getestet. Details:
 [docs/hermes/SUPER_HERMES.md](docs/hermes/SUPER_HERMES.md).
 
+Zusätzlich installiert (offiziell, NousResearch-verifiziert per
+GitHub-API): **Hermes Agent Self-Evolution** — ein separates,
+Offline-Optimierungswerkzeug für Skills/Prompts (aktuell Phase 1,
+nur Skills), das Kandidaten generiert und ausschließlich als
+Pull-Request zur menschlichen Prüfung vorschlägt, nie direkt committet.
+Installiert in einer eigenen, von Hermes getrennten Python-Umgebung.
+Per Quellcode-Prüfung bestätigt: `--dry-run` löst keinerlei API-Calls
+aus (kehrt zurück, bevor der LLM-Client instanziiert wird) — genau
+dieser kostenlose Modus wurde ausgeführt, kein echter, kostenpflichtiger
+Optimierungslauf. Details:
+[docs/hermes/SELF_EVOLUTION.md](docs/hermes/SELF_EVOLUTION.md).
+
 ## Workspace
 
 Wird nicht im Repository nachgebaut. Hermes bringt seine eigene

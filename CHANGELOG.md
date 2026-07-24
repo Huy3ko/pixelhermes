@@ -33,19 +33,24 @@ Companion-Stack (Honcho + lokaler Embedding-Server), plus geprüfte
   `docs/hermes/OVERVIEW.md`, `ARCHITECTURE.md`, `INSTALL.md`,
   `README.md` aktualisiert
 
-### Evaluated, not installed
+### Also added — evaluated and installed under a precisified policy
 
 - **Humalike** — offiziell dokumentiertes Hermes-Plugin, aber
   abhängig von einem kostenpflichtigen externen Cloud-Dienst; bewusst
-  abgelehnt, widerspricht "Self Hosted"
-- **Super Hermes** (`Cranot/super-hermes`) — Drittanbieter-Skill-Paket,
-  kein offizielles Nous-Research-Projekt; Repository vollständig
-  geprüft; Installationsentscheidung (manuell, ohne `install.sh`)
-  läuft als eigener, dokumentierter Schritt
+  abgelehnt, widerspricht "Self Hosted". Nichts installiert.
+- **Super Hermes** (`Cranot/super-hermes`) — Drittanbieter-Skill-Paket
+  (5 Skills, 7 Prisms), kein offizielles Nous-Research-Projekt.
+  Vollständig geprüft (Inhalt, kein Core-File-Zugriff), manuell
+  installiert (kein `install.sh` ausgeführt), real getestet
+  (`/prism-scan`, 19 echte Tool-Calls), Entfernbarkeit real verifiziert.
+  Führte zur Präzisierung der "nur offizielle Erweiterungen"-Regel
+  ([ADR 0005](ADR/0005-third-party-extension-policy.md))
 - **Hermes Agent Self-Evolution** (`NousResearch/hermes-agent-self-
   evolution`) — als echtes offizielles Repo verifiziert (GitHub-API,
-  nicht nur URL); kostenpflichtig pro Optimierungslauf ($2-10);
-  Installation/Konfiguration ohne echten Lauf folgt als eigener Schritt
+  nicht nur URL). Installiert, konfiguriert, per Quellcode-Analyse
+  bestätigt kostenloser `--dry-run` ausgeführt (0 API-Calls, 0 Dateien
+  erzeugt) — kein echter, kostenpflichtiger Optimierungslauf ($2-10
+  laut README)
 
 ### Not included (bewusst)
 

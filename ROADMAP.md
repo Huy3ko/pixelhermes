@@ -172,10 +172,13 @@ Runtime-Patches an Hermes.
       ([ADR 0003](ADR/0003-shared-services-under-opt-companion.md))
 - [x] `docs/hermes/HONCHO.md`, `docs/hermes/COMPANION_STACK.md` neu;
       Top-Level-Docs aktualisiert
-- [~] Super Hermes (Drittanbieter-Skill-Paket) und Hermes Agent
-      Self-Evolution (offizielles NousResearch-Repo, kostenpflichtig
-      pro Lauf) geprüft — Installation/Konfiguration als separate,
-      dokumentierte Schritte im Sprintverlauf
+- [x] Super Hermes (Drittanbieter-Skill-Paket, `Cranot/super-hermes`)
+      geprüft und installiert — Policy präzisiert statt aufgeweicht
+      ([ADR 0005](ADR/0005-third-party-extension-policy.md))
+- [x] Hermes Agent Self-Evolution (offizielles NousResearch-Repo,
+      GitHub-API-verifiziert) installiert und konfiguriert; per
+      Quellcode bestätigter kostenloser `--dry-run` ausgeführt, kein
+      echter (kostenpflichtiger) Optimierungslauf
 
 Ausdrücklich nicht Teil dieses Sprints: OpenWebUI, mem0, weitere
 Cloud-Provider (OpenRouter, Ollama, OpenAI, Gemini),

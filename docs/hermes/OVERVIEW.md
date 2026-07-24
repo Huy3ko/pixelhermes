@@ -39,6 +39,7 @@ Quelle: [github.com/NousResearch/hermes-agent](https://github.com/NousResearch/h
 | Produktivbetrieb (Phase 6) | [PRODUCTIVE_RUNTIME.md](PRODUCTIVE_RUNTIME.md), [ASSESSMENT.md](ASSESSMENT.md) | Grok+Exa produktiv konfiguriert und real verifiziert, inkl. eines kritischen, ungelösten Fundes (Exa/`web_search` wird nicht zuverlässig aufgerufen) |
 | Companion Stack (Sprint 7) | [HONCHO.md](HONCHO.md), [COMPANION_STACK.md](COMPANION_STACK.md) | Selbstgehosteter Honcho-Memory-Server + lokaler Embedding-Server (llama.cpp), real installiert, konfiguriert und Ende-zu-Ende verifiziert (Cross-Session-Recall bestätigt) |
 | Drittanbieter-Erweiterungen (Sprint 7) | [SUPER_HERMES.md](SUPER_HERMES.md) | Erste geprüfte, bewusst zugelassene Drittanbieter-Erweiterung (Skill-Paket), inkl. Entfernbarkeits-Nachweis |
+| Self-Evolution (Sprint 7) | [SELF_EVOLUTION.md](SELF_EVOLUTION.md) | Offizielles NousResearch-Tool installiert und konfiguriert, per Quellcode-Analyse als kostenlos bestätigter Dry-Run durchgeführt — kein echter (kostenpflichtiger) Optimierungslauf |
 
 ## Architektur in einem Satz
 
