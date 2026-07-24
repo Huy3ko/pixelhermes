@@ -24,6 +24,20 @@ Pro-Server-Optionen: `enabled`, `timeout` (Default 300s),
 `connect_timeout` (Default 60s), `supports_parallel_tool_calls`,
 `idle_timeout_seconds`/`max_lifetime_seconds`.
 
+### Real beobachtet — hermes_hugo (Phase 4, 2026-07-24)
+
+Auf der frisch installierten, unveränderten Instanz:
+
+- `hermes mcp list` → **"No MCP servers configured."** — bestätigt: kein
+  MCP-Server ist standardmäßig aktiv, bewusst keiner hinzugefügt.
+- `grep mcp_servers ~/.hermes/config.yaml` → kein Treffer — der Schlüssel
+  `mcp_servers:` existiert im generierten `config.yaml` nicht einmal als
+  leerer/auskommentierter Block.
+- `hermes mcp catalog` zeigt exakt dieselben vier Einträge wie in der
+  Phase-2-Recherche dokumentiert: `blender`, `linear`, `n8n`,
+  `unreal-engine`, alle Status `available` (nicht installiert) — der
+  Katalogstand ist seit der Recherche vom 2026-07-24 unverändert.
+
 **Tool-Namenskonvention (bestätigt):** `mcp_<server_name>_<tool_name>`,
 Bindestriche/Punkte werden zu Unterstrichen konvertiert. Filterung
 (`include`/`exclude`) nutzt jedoch den ursprünglichen, unbereinigten

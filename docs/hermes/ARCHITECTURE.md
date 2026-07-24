@@ -110,6 +110,34 @@ Flags: `--host`, `--port`, `--insecure`, `--skip-build`, `--stop`,
 `hermes dashboard` jenseits von "headless"; vollständige Liste der
 "administrativen Routen".
 
+### Real beobachtet — hermes_hugo (Phase 4, 2026-07-24)
+
+- Entgegen der oben zitierten Doku-Aussage ("Standardinstallation
+  enthält keine HTTP/PTY-Deps") waren `fastapi`, `uvicorn`,
+  `ptyprocess`, `starlette` bereits nach dem Standard-Installer
+  vorhanden — ein zusätzliches `uv pip install -e ".[web,pty]"` änderte
+  nichts (siehe [INSTALLATION.md](INSTALLATION.md)). `hermes serve
+  --host 127.0.0.1 --port 9119` startete ohne weitere Vorbereitung.
+- Log-Ausgabe beim Start: `HERMES_BACKEND_READY port=9119`.
+- `curl http://127.0.0.1:9119/api/status` (Loopback-Bind, kein
+  `--insecure` nötig, `auth_required: false`) lieferte u. a.:
+  `"gateway_running": false`, `"active_agents": 0`,
+  `"overall": "degraded"` (weil `components.gateway.status: "degraded"`,
+  `state: "stopped"` — vor dem ersten Gateway-Start normal),
+  `"profiles": ["default"]`, `"hermes_home": "/srv/companion/hermes_hugo/.hermes"`,
+  `"config_path": ".../config.yaml"`, `"env_path": ".../env"` — Profil-
+  Erkennung und Config-Pfade damit über die API bestätigt, nicht nur über
+  die CLI.
+- `hermes serve --stop` beendete den Prozess sauber und verwies in der
+  Ausgabe auf `hermes dashboard --port <port>` zum Neustart — ein Indiz,
+  dass `serve` und `dashboard` denselben Prozess-/State-Mechanismus
+  teilen (bestätigt die offene Frage oben eher, als sie aufzulösen).
+- `GET /` (ohne Pfad) lieferte `HTTP 404` — die eigentliche Dashboard-UI
+  ist unter `/api/*` bzw. spezifischen Routen erreichbar, nicht unter
+  dem Root-Pfad selbst (mit `--skip-build`/ohne gebautes Frontend
+  erwartbar, nicht weiter untersucht, da UI explizit außerhalb des
+  Phase-4-Scopes liegt).
+
 ## Gateway
 
 Quelle: [Messaging](https://hermes-agent.nousresearch.com/docs/user-guide/messaging),
@@ -139,6 +167,25 @@ Diensteinrichtung plattformspezifisch: systemd (Linux), launchd (macOS).
 unabhängigen Gateway-Prozess mit eigenen Bot-Tokens; "Token-Locks"
 verhindern Konflikte bei geteilten Bot-Tokens.
 
+### Real beobachtet — hermes_hugo (Phase 4, 2026-07-24)
+
+`hermes gateway run` manuell im Hintergrund gestartet (kein
+`hermes gateway install`, kein systemd — wie für diese Phase
+vorgegeben):
+
+- Log: `WARNING gateway.run: No env user allowlists configured. ...`
+  und `WARNING gateway.run: No messaging platforms enabled.` — startet
+  also auch **ohne** jede Plattformkonfiguration erfolgreich, meldet nur
+  Warnungen, keine Fehler/Abbruch.
+- `hermes gateway status` meldet danach explizit:
+  **"✓ Gateway is running (PID: ...) — (Running manually, not as a
+  system service)"** — Hermes unterscheidet also selbst bewusst
+  zwischen manuellem und Service-Betrieb, passend zur Sprint-Vorgabe
+  "zunächst ausschließlich manuell starten".
+- `hermes gateway stop` beendete den Prozess sauber
+  ("✓ Stopped gateway for this profile"), `hermes gateway status`
+  danach wieder "✗ Gateway is not running".
+
 ## Profiles
 
 Quelle: [Profiles](https://hermes-agent.nousresearch.com/docs/user-guide/profiles),
@@ -164,6 +211,25 @@ Sandbox** — Agenten behalten normalen Dateisystemzugriff des OS-Users.
 **Verwaltungsbefehle:** `list`, `show`, `rename`, `export`, `import`,
 `delete`, `alias`, `install <source>` (Profil-Distribution), `update`,
 `info`.
+
+### Real beobachtet — hermes_hugo (Phase 4, 2026-07-24)
+
+`hermes profile list` auf der frischen Installation zeigt genau eine
+Zeile:
+
+```
+ Profile          Model                        Gateway      Alias        Distribution
+ ◆default         anthropic/claude-opus-4.6    stopped      —            —
+```
+
+Bestätigt: das Default-Profil wird korrekt erkannt (`◆` markiert es als
+aktiv), kein zweites Profil vorhanden — wie in
+[WORKSPACE.md](WORKSPACE.md) begründet, wurde bewusst kein `hermes
+profile create hermes_hugo` ausgeführt. `hermes profile show` (ohne
+Argument) bricht mit `error: the following arguments are required:
+profile_name` ab — der Befehl verlangt zwingend einen expliziten
+Profilnamen, auch für das Default-Profil (`hermes profile show
+default`), was in der bisherigen Doku-Recherche nicht auffiel.
 
 ## Sessions
 

@@ -134,9 +134,91 @@ Home-Verzeichnisse `700`, kein Hermes, kein systemd-Service, kein
 Workspace, keine Datenbank — ausschließlich Benutzer und leere
 Home-Verzeichnisse.
 
+## Sprint 4 — Native Hermes Installation
+
+Erste echte Hermes-Installation, ausschließlich für `hermes_hugo`.
+`hermes_christiane` folgt erst nach erfolgreichem Abschluss. Kein
+systemd-Service, kein Workspace-Umbau, keine zusätzlichen Skills, kein
+MCP, kein mem0/Humalike, kein Modell-Provider konfiguriert. Vollständige
+Beobachtungen inkl. aller Abweichungen von der Doku-Recherche aus
+Sprint 2: [docs/hermes/INSTALLATION.md](docs/hermes/INSTALLATION.md).
+
+### Installation (als hermes_hugo, offizieller Installer)
+
+```bash
+sudo -u hermes_hugo -H bash -lc 'cd ~ && curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash'
+```
+
+Nicht-interaktiv fehlgeschlagene, vom Installer selbst vorgeschlagene
+Nacharbeiten (beide erfordern Root, wurden separat nachgeholt):
+
+```bash
+sudo apt-get install -y ripgrep ffmpeg
+sudo bash -c 'cd /srv/companion/hermes_hugo/.hermes/hermes-agent && npx playwright install-deps chromium'
+```
+
+Playwright/Chromium blieb trotzdem nicht funktionsfähig (`playwright:
+not found`) — nicht weiter verfolgt, da Browser-Tools außerhalb des
+Phase-4-Scopes (CLI/API Server/Gateway/Profil) liegen.
+
+### Config-Migration (kein API-Key, keine Anmeldedaten)
+
+```bash
+sudo -u hermes_hugo -H bash -lc 'cd ~/.hermes/hermes-agent && source venv/bin/activate && uv pip install -e ".[web,pty]"'
+sudo -u hermes_hugo -H bash -lc 'cd ~ && hermes config migrate'
+```
+
+Das `[web,pty]`-Install fügte real **keine** neuen Pakete hinzu — bereits
+Teil der Standardinstallation (Abweichung von der Doku-Vermutung aus
+Sprint 2, siehe [docs/hermes/INSTALLATION.md](docs/hermes/INSTALLATION.md)).
+`config migrate` hob das generierte `config.yaml` ohne Abfrage von
+API-Keys von Schema-Version 0 auf 33.
+
+### Verifikation (alle Schritte real ausgeführt, danach sauber gestoppt)
+
+```bash
+sudo -u hermes_hugo -H bash -lc 'hermes --version'
+sudo -u hermes_hugo -H bash -lc 'hermes doctor'
+sudo -u hermes_hugo -H bash -lc 'hermes profile list'
+sudo -u hermes_hugo -H bash -lc 'hermes config check'
+sudo -u hermes_hugo -H bash -lc 'nohup hermes serve --host 127.0.0.1 --port 9119 > /tmp/hermes_serve.log 2>&1 &'
+curl http://127.0.0.1:9119/api/status
+sudo -u hermes_hugo -H bash -lc 'hermes serve --stop'
+sudo -u hermes_hugo -H bash -lc 'nohup hermes gateway run > /tmp/hermes_gateway.log 2>&1 &'
+sudo -u hermes_hugo -H bash -lc 'hermes gateway status'
+sudo -u hermes_hugo -H bash -lc 'hermes gateway stop'
+sudo -u hermes_hugo -H bash -lc 'hermes skills list'
+sudo -u hermes_hugo -H bash -lc 'hermes mcp list'
+sudo -u hermes_hugo -H bash -lc 'hermes mcp catalog'
+```
+
+Ergebnisse (Details und vollständige Rohausgaben:
+[docs/hermes/ARCHITECTURE.md](docs/hermes/ARCHITECTURE.md),
+[docs/hermes/SKILLS.md](docs/hermes/SKILLS.md),
+[docs/hermes/MCP.md](docs/hermes/MCP.md)):
+
+| Prüfung | Ergebnis |
+|---|---|
+| Hermes startet | `Hermes Agent v0.19.0 (2026.7.20)` |
+| CLI funktioniert | `doctor`/`config check`/`profile list` fehlerfrei |
+| Profil wird erkannt | genau ein Profil `◆default` |
+| Konfiguration lädt korrekt | Config-Version 33, Pfade über API bestätigt |
+| API erreichbar | `HTTP 200` auf `/api/status`, `hermes_home`/`config_path` korrekt |
+| Gateway startet | läuft manuell, meldet sich selbst als "not a system service" |
+| Standard-Skills | 65 aktivierte builtin-Skills über 13 Kategorien, 0 Hub/lokal |
+| Standard-MCP-Server | 0 konfiguriert; Katalog zeigt 4 verfügbare (blender, linear, n8n, unreal-engine) |
+
+Kein Prozess läuft nach der Verifikation dauerhaft weiter (kein
+systemd — wie für diese Phase vorgegeben).
+
+### Ergebnis
+
+Ein funktionierender, unveränderter Hermes-Agent für `hermes_hugo`
+(CLI, API Server, Gateway, Default-Profil) — kein Modell-Provider, kein
+zusätzlicher Skill, kein MCP-Server, kein systemd-Service, kein
+Workspace-Umbau. `hermes_christiane` weiterhin nur Konto + leeres Home.
+
 ## Nächste Schritte
 
-Modell-/Provider-Entscheidung (ADR), danach die eigentliche
-Hermes-Installation je Benutzer nach
-[docs/hermes/INSTALLATION.md](docs/hermes/INSTALLATION.md). Siehe
-[ROADMAP.md](ROADMAP.md).
+Modell-/Provider-Entscheidung (ADR) für `hermes_hugo`, danach ggf.
+`hermes_christiane` nach demselben Muster. Siehe [ROADMAP.md](ROADMAP.md).

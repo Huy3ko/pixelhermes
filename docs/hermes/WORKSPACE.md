@@ -40,6 +40,68 @@ Verzeichnis unter `~/.hermes/profiles/<name>/` mit eigenem
 Gateway-State. **Isolation ist Zustandsisolation, keine Dateisystem-
 Sandbox** (siehe [ARCHITECTURE.md](ARCHITECTURE.md)).
 
+### Real beobachtete Struktur — hermes_hugo (Phase 4, 2026-07-24)
+
+Nach frischer Installation plus kurzem manuellem Start von `hermes
+serve` und `hermes gateway run` (siehe
+[INSTALLATION.md](INSTALLATION.md)), beobachtet unter
+`/srv/companion/hermes_hugo/.hermes/` (Codebase-Checkout
+`hermes-agent/` und `venv/` ausgeklammert):
+
+```
+.hermes/
+├── .clean_shutdown            # nicht in der Doku-Recherche erwähnt
+├── .env
+├── .update_check                # nicht in der Doku-Recherche erwähnt
+├── SOUL.md
+├── audio_cache/                   # nicht in der Doku-Recherche erwähnt
+├── auth.lock                        # nicht in der Doku-Recherche erwähnt
+├── bin/                                # gemanagte uv/uvx-Kopie + "tirith" (Security-Scanner, siehe SKILLS.md)
+├── channel_directory.json               # nicht in der Doku-Recherche erwähnt
+├── config.yaml
+├── cron/
+│   ├── .jobs.lock
+│   ├── .tick.lock
+│   ├── executions.db                       # nicht in der Doku-Recherche erwähnt
+│   ├── output/
+│   ├── ticker_heartbeat
+│   └── ticker_last_success
+├── gateway-starts.log
+├── gateway_state.json
+├── hooks/                                    # nicht in der Doku-Recherche erwähnt
+├── image_cache/                                # nicht in der Doku-Recherche erwähnt
+├── kanban/ , kanban.db, kanban.db.*.lock         # Kanban-Feature, separat von docs/hermes/WORKSPACE.md erwähnt
+├── logs/
+│   ├── agent.log, errors.log, gateway.log
+│   ├── curator/                                    # nicht in der Doku-Recherche erwähnt
+│   ├── gateway-exit-diag.log, gateway-shutdown-diag.log, gui.log
+├── memories/                                          # leer bis zum ersten geschriebenen Memory (kein MEMORY.md/USER.md vor erster Nutzung)
+├── pairing/ , platforms/pairing/                        # nicht in der Doku-Recherche erwähnt
+├── sandboxes/singularity/                                 # leeres Terminal-Backend-Verzeichnis
+├── sessions/                                                # leer (0 aktive Sessions)
+├── skills/                                                    # 65 aktivierte builtin-Skills, siehe SKILLS.md
+├── state/gateway.heartbeat                                     # nicht in der Doku-Recherche erwähnt
+└── state.db                                                     # erst nach erstem Serve-/Gateway-Start entstanden
+```
+
+Nicht beobachtet (weil noch nicht ausgelöst): `auth.json` (erst bei
+OAuth-Login), `pending/`, `.archive/`, `.curator_backups/` (erst nach
+Curator-Lauf bzw. Skill-Schreibvorgang), `state-snapshots/`, `backups/`
+(erst nach `hermes update`/`hermes backup`), `~/.hermes/profiles/`
+(kein zweites Profil angelegt — siehe unten).
+
+**Zum Profil-Konzept:** Es wurde bewusst **kein** `hermes profile
+create hermes_hugo` ausgeführt. Der Linux-Benutzer `hermes_hugo`
+*ist* bereits der Träger eines eigenen, isolierten Hermes-Zustands über
+sein Home-Verzeichnis — das Default-Profil dieses Home-Verzeichnisses
+(`~/.hermes/` ohne `profiles/`-Unterordner) erfüllt exakt das, was mit
+"Profil hermes_hugo" gemeint war: eigene, isolierte Config/Memory/
+Sessions/Skills unter den von Hermes vorgesehenen **Standardpfaden**.
+Ein zusätzlicher benannter Unterprofil-Ordner (`~/.hermes/profiles/hermes_hugo/`)
+hätte non-default Pfade erzeugt und wäre der eigentlichen Anweisung
+("Standardpfade verwenden") entgegengelaufen. Bestätigt durch
+`hermes profile list`, das genau ein Profil zeigt: `◆default`.
+
 ## Context Files
 
 Quelle: [Context Files](https://hermes-agent.nousresearch.com/docs/user-guide/features/context-files)

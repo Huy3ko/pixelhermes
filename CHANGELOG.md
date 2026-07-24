@@ -3,6 +3,49 @@
 Format angelehnt an [Keep a Changelog](https://keepachangelog.com/).
 Commits folgen [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [Sprint 4] - 2026-07-24 - Native Hermes Installation
+
+Erste installierte Anwendung im Projekt — ausschließlich für den
+Benutzer `hermes_hugo`, `hermes_christiane` folgt erst nach
+erfolgreichem Abschluss.
+
+### Added
+
+- Hermes Agent nativ installiert für `hermes_hugo` über den offiziellen
+  Installer (`hermes-agent.nousresearch.com/install.sh`), Version 0.19.0
+  (2026.7.20), Install-Methode `git`
+- `ripgrep`, `ffmpeg` systemweit nachinstalliert (vom Hermes-Installer
+  selbst als fehlend gemeldet)
+- Config auf Schema-Version 33 migriert (`hermes config migrate`), ohne
+  API-Keys/Anmeldedaten einzutragen
+- CLI, API Server (`hermes serve`) und Gateway (`hermes gateway run`)
+  jeweils manuell gestartet, verifiziert (Prozess läuft, HTTP 200 auf
+  `/api/status`, Profil- und Config-Erkennung über API bestätigt) und
+  wieder sauber gestoppt
+- 65 standardmäßige builtin-Skills und der Stand des offiziellen
+  MCP-Katalogs (0 konfigurierte Server, 4 verfügbare) beobachtet und
+  dokumentiert, ohne etwas davon zu verändern
+- `docs/hermes/` um reale Beobachtungen ergänzt (INSTALLATION,
+  WORKSPACE, SKILLS, MCP, ARCHITECTURE, OPEN_QUESTIONS), klar getrennt
+  von der Doku-Recherche aus Sprint 2 — inklusive mehrerer entdeckter
+  Abweichungen zwischen offizieller Doku und realem Verhalten (u. a.
+  `web`/`pty`-Extras bereits im Standardinstall enthalten, unbekannte
+  Toolset-Referenzen `hermes-teams`/`hermes-google_chat` im
+  Default-Config-Template, Skill-Zähldiskrepanz 69 vs. 65)
+- `INSTALL.md`, `ARCHITECTURE.md` um die tatsächlich durchgeführten
+  Schritte und Verifikationsergebnisse ergänzt
+
+### Not included (bewusst)
+
+- Modell-/Provider-Konfiguration (kein API-Key hinterlegt)
+- Zusätzliche Skills, konfigurierte MCP-Server
+- systemd-Service (Gateway/API Server nur manuell gestartet und wieder
+  gestoppt)
+- Workspace-Anpassungen jeder Art (nur beobachtet, nicht verändert)
+- Playwright/Chromium-Browser-Tools (Installation fehlgeschlagen, nicht
+  weiter verfolgt — außerhalb des Phase-4-Scopes)
+- Hermes-Installation für `hermes_christiane`
+
 ## [Sprint 3] - 2026-07-24 - Runtime Foundation
 
 Erste echten Änderungen am Server selbst (bisher nur am Repository).

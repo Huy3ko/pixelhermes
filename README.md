@@ -7,17 +7,19 @@ später die Infrastructure-as-Code-Definitionen.
 
 ## Status
 
-**Sprint 3: Runtime Foundation** — Repository-Fundament (Sprint 1),
-Hermes-Architektur-Recherche (Sprint 2, siehe [docs/hermes/](docs/hermes/))
-und die reale Linux-Runtime (Node.js, Python/uv, Basispakete,
-Systemstruktur, zwei Benutzer) sind vorhanden.
+**Sprint 4: Native Hermes Installation** — Repository-Fundament
+(Sprint 1), Hermes-Architektur-Recherche (Sprint 2, siehe
+[docs/hermes/](docs/hermes/)), reale Linux-Runtime (Sprint 3) und ein
+nativ installierter, unveränderter Hermes-Agent für `hermes_hugo`
+(CLI, API Server, Gateway, Default-Profil) sind vorhanden.
 
 Ausdrücklich **weiterhin nicht** installiert/angelegt:
 
-- Hermes, Hermes Workspace, OpenWebUI, mem0, Humalike, MCP, Skills
-  (Hermes-eigene)
-- Workspaces, Personas, Memory-Engine
-- systemd-Services, Datenbanken
+- OpenWebUI, mem0, Humalike
+- Modell-/Provider-Credentials, Personas, Memory-Konfiguration
+- Zusätzliche (Nicht-Hermes-eigene) Skills, konfigurierte MCP-Server
+- systemd-Services
+- Alles für `hermes_christiane` außer Konto und leerem Home-Verzeichnis
 
 Details siehe [ROADMAP.md](ROADMAP.md).
 
@@ -69,13 +71,13 @@ seit Sprint 3 real angelegt — siehe
 
 ## Workspace
 
-Wird nicht im Repository nachgebaut. Hermes bringt seine eigene, bereits
-recherchierte Workspace-Konvention mit (`~/.hermes/`), siehe
-[docs/hermes/WORKSPACE.md](docs/hermes/WORKSPACE.md). Die realen
-Home-Verzeichnisse dafür existieren seit Sprint 3
-(`/srv/companion/hermes_hugo/`, `/srv/companion/hermes_christiane/`);
-befüllt wird der Workspace erst mit der tatsächlichen
-Hermes-Installation.
+Wird nicht im Repository nachgebaut. Hermes bringt seine eigene
+Workspace-Konvention mit (`~/.hermes/`), siehe
+[docs/hermes/WORKSPACE.md](docs/hermes/WORKSPACE.md) — dort seit
+Sprint 4 inklusive der real beobachteten Struktur unter
+`/srv/companion/hermes_hugo/.hermes/`. Bewusst nicht verändert oder
+erweitert, nur beobachtet. `/srv/companion/hermes_christiane/` hat
+weiterhin keinen Workspace-Inhalt.
 
 ## Weiterführende Dokumente
 

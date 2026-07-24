@@ -6,9 +6,12 @@ Prinzipien, an denen sich jede spätere Entscheidung messen lassen muss.
 Seit Sprint 3 (Runtime Foundation) existiert neben dem Repository auch
 die reale Linux-Systemstruktur (Verzeichnisse, Laufzeitabhängigkeiten,
 zwei Benutzer) — siehe [Systemstruktur](#systemstruktur) unten und
-[INSTALL.md](INSTALL.md) für die genauen Schritte. Es läuft weiterhin
-kein Dienst, es ist weiterhin keine Anwendung (Hermes, OpenWebUI, mem0,
-Humalike) installiert.
+[INSTALL.md](INSTALL.md) für die genauen Schritte. Seit Sprint 4 läuft
+für den Benutzer `hermes_hugo` eine native, unveränderte Hermes-Agent-
+Installation (CLI, API Server, Gateway, Default-Profil) — siehe
+[Hermes-Installation](#hermes-installation-sprint-4) unten. Es ist
+weiterhin kein systemd-Service aktiv, es ist weiterhin kein OpenWebUI,
+mem0 oder Humalike installiert.
 
 ## Architekturprinzipien
 
@@ -119,9 +122,13 @@ skizzierten Agenten:
 
 Home-Verzeichnis bewusst unter `/srv/companion/` statt `/home/`
 (Begründung: [ADR 0002](ADR/0002-companion-user-home-under-srv.md)).
-Noch **kein** Hermes, **kein** systemd-Service, **kein** Workspace,
-**keine** Datenbank für diese Benutzer — ausschließlich Konten und leere
-Home-Verzeichnisse.
+
+Stand Sprint 4: `hermes_hugo` hat eine installierte, native Hermes-
+Agent-Instanz (siehe unten); `hermes_christiane` hat weiterhin
+ausschließlich Konto und leeres Home-Verzeichnis — folgt laut
+[ROADMAP.md](ROADMAP.md) erst nach erfolgreichem Abschluss von
+`hermes_hugo`. Für keinen der beiden Benutzer existiert ein
+systemd-Service.
 
 ## Laufzeitabhängigkeiten (Runtime)
 
@@ -140,19 +147,46 @@ für Hermes' eigene Anforderungen):
   `build-essential`, `ca-certificates`, `jq`, `tree`, `htop`, `zip`,
   `unzip` (bereits vorhanden bzw. ergänzt).
 
+## Hermes-Installation (Sprint 4)
+
+Für `hermes_hugo` wurde Hermes Agent nativ und unverändert nach
+offizieller Dokumentation installiert (`curl -fsSL
+https://hermes-agent.nousresearch.com/install.sh | bash`, ausgeführt als
+dieser Linux-Benutzer). Umfang bewusst beschränkt auf CLI, API Server,
+Gateway und Profil — keine Desktop-Version, keine experimentellen
+Features, kein Workspace-Umbau, keine zusätzlichen Skills, kein MCP,
+kein mem0/Humalike. Vollständige, quellenbelegte Beobachtungen:
+[docs/hermes/INSTALLATION.md](docs/hermes/INSTALLATION.md).
+
+**Verifiziert und real beobachtet** (nicht vermutet):
+
+| Prüfung | Ergebnis |
+|---|---|
+| Hermes startet | `hermes --version` → `Hermes Agent v0.19.0 (2026.7.20)` |
+| CLI funktioniert | `hermes doctor`, `hermes config check`, `hermes profile list` liefen fehlerfrei |
+| Profil wird erkannt | `hermes profile list` zeigt `◆default`; `GET /api/status` bestätigt `"profiles": ["default"]` |
+| Konfiguration wird korrekt geladen | `hermes config check` → Version 33 (nach `hermes config migrate`), `config_path`/`env_path` über API bestätigt |
+| API erreichbar | `hermes serve --host 127.0.0.1 --port 9119` → `HERMES_BACKEND_READY`, `GET /api/status` → HTTP 200 |
+| Gateway startet | `hermes gateway run` → läuft, `hermes gateway status` meldet explizit "Running manually, not as a system service" |
+
+Kein Modell-Provider konfiguriert (bewusste Entscheidung für diese
+Phase — siehe [ROADMAP.md](ROADMAP.md)); alle Test-Prozesse (API Server,
+Gateway) wurden nach der Verifikation wieder sauber gestoppt, es läuft
+aktuell nichts dauerhaft.
+
 ## Workspace
 
 Wird nicht im Repository nachgebaut. Hermes bringt seine eigene
 Workspace-Konvention mit (`~/.hermes/`), dokumentiert in
-[docs/hermes/WORKSPACE.md](docs/hermes/WORKSPACE.md). Die realen
-Home-Verzeichnisse dafür existieren seit Sprint 3 (siehe "Benutzer"
-oben); der Workspace-Inhalt selbst entsteht erst mit der tatsächlichen
-Hermes-Installation.
+[docs/hermes/WORKSPACE.md](docs/hermes/WORKSPACE.md) — inklusive der
+seit Sprint 4 real beobachteten Verzeichnisstruktur unter
+`/srv/companion/hermes_hugo/.hermes/`. Es wurde bewusst **nicht**
+verändert, erweitert oder um eigene Ordner ergänzt — nur beobachtet.
 
-## Ausdrücklich nicht Teil von Sprint 1–3
+## Ausdrücklich nicht Teil von Sprint 1–4
 
-- Hermes, Hermes Workspace, OpenWebUI, mem0, Humalike, MCP, Skills
-  (Hermes-eigene)
+- Hermes Workspace-Anpassungen, OpenWebUI, mem0, Humalike
+- Zusätzliche (Nicht-Hermes-eigene) Skills, konfigurierte MCP-Server
 - systemd-Services (laufend oder aktiviert)
-- Datenbanken
-- Persona-/Memory-Konfiguration
+- Modell-/Provider-Credentials, Personas, Memory-Konfiguration
+- Alles für `hermes_christiane` außer Konto und leerem Home-Verzeichnis

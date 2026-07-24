@@ -77,6 +77,61 @@ Exakte Mindestversionen (z. B. welche Windows-/macOS-Builds) über
 "10/11" bzw. "Apple Silicon" hinaus sind in der offiziellen Doku nicht
 angegeben.
 
+## Reale Installation — hermes_hugo (Phase 4, 2026-07-24)
+
+Tatsächlich durchgeführte, native Installation für den Linux-Benutzer
+`hermes_hugo` (Home: `/srv/companion/hermes_hugo`), via
+`curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash`,
+non-interaktiv über `sudo -u hermes_hugo -H bash -lc '...'`. Reale
+Beobachtungen, keine Vermutungen:
+
+- **Managed uv:** Der Installer installiert zusätzlich eine eigene,
+  "gemanagte" `uv`-Kopie nach `~/.hermes/bin/uv` (unabhängig von der in
+  Phase 3 systemweit unter `/usr/local/bin/uv` installierten Version) und
+  darüber eine eigene **Python 3.11.15** (via `uv python install`),
+  getrennt vom System-Python 3.13.5. Hermes bringt seine Python-Runtime
+  also faktisch selbst mit, unabhängig vom System-Python.
+- **Nicht-interaktive Lücken:** Zwei Schritte scheiterten erwartungsgemäß
+  ohne TTY und wurden übersprungen: (1) `ripgrep`/`ffmpeg` — vom
+  Installer selbst mit `sudo apt install -y ripgrep ffmpeg` nachinstalliert,
+  danach verifiziert (`ripgrep 14.1.1`, `ffmpeg 7.1.5`); (2) Playwright-
+  Chromium-Browser-Engine — Versuch, die System-Bibliotheken via
+  `sudo npx playwright install-deps chromium` nachzuinstallieren, schlug
+  fehl (`playwright: not found`, keine lokale `playwright`-node-
+  Installation im Repo auffindbar trotz vorhandener `node_modules/` unter
+  `hermes-agent/`, `hermes-agent/web/`, `hermes-agent/ui-tui/`) — nicht
+  weiter verfolgt, da Browser-Tools außerhalb des Phase-4-Scopes
+  (CLI/API Server/Gateway/Profil) liegen. `hermes doctor` bestätigt:
+  "Playwright Chromium not installed (browser_\* tools will be hidden
+  from the agent)" — der Rest der Installation ist davon unberührt.
+- **`web`/`pty`-Extras bereits im Standardinstall enthalten (Abweichung
+  von der bisherigen Doku-Vermutung):** Ein separates
+  `uv pip install -e ".[web,pty]"` (siehe Doku-Hinweis in
+  [ARCHITECTURE.md](ARCHITECTURE.md#api-server)) installierte **keine**
+  zusätzlichen Pakete — `fastapi`, `uvicorn`, `ptyprocess`, `starlette`
+  waren bereits Teil des Standard-`[all]`-Installs über
+  `install.sh` (hash-verifizierter `uv.lock`-Tier, 95 Pakete). Der API
+  Server war damit ohne weiteres Zutun sofort startbar.
+- **Config-Migration:** frisch generierte `config.yaml` hatte
+  Schemaversion 0; `hermes config migrate` hob sie ohne Rückfrage nach
+  API-Keys auf Version 33 (u. a. Timezone-Erkennung, Curator-
+  Konfigurationsblock, `agent.verify_on_stop: false` als neuer Default).
+  Dabei zwei unabhängig vom Update bestehende Warnungen beobachtet:
+  `platform 'teams' references unknown toolset 'hermes-teams'` und
+  `platform 'google_chat' references unknown toolset 'hermes-google_chat'`
+  — ungeklärte Inkonsistenz im mitgelieferten Default-Config-Template,
+  siehe [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md).
+- **`sudo` wird nur für Build-Tools angefragt, nicht für den Agenten
+  selbst:** Installer-Text bestätigt wörtlich: "Hermes Agent itself does
+  not require or retain root access." In der non-interaktiven Umgebung
+  scheiterte der `sudo`-Aufruf für Build-Tools mangels TTY, die
+  Installation lief trotzdem durch (`build-essential`/`python3-dev` aus
+  Phase 3 waren bereits vorhanden).
+- **Bundled Skills:** Sync-Log meldete "Done: 69 new, 0 updated, 0
+  unchanged. 69 total bundled", `hermes skills list` zeigt danach 65
+  aktivierte `builtin`-Skills — Diskrepanz (69 vs. 65) real beobachtet,
+  nicht aufgelöst. Details: [SKILLS.md](SKILLS.md).
+
 ---
 
 ## PixelHermes-Mapping

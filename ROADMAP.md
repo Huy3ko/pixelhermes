@@ -71,20 +71,49 @@ Ausdrücklich nicht Teil dieses Sprints: Hermes, Hermes Workspace,
 OpenWebUI, mem0, Humalike, systemd-Services, Workspaces, Personas,
 Memory-Engine, Skills, SQLite-Datenbanken.
 
-## Sprint 4+ — geplant (noch nicht begonnen)
+## Sprint 4 — Native Hermes Installation (abgeschlossen)
+
+Ziel: genau ein produktionsfähiger Hermes-Agent, ausschließlich für
+`hermes_hugo`. `hermes_christiane` folgt erst nach erfolgreichem
+Abschluss. Nur CLI, API Server, Gateway, Profil — keine Desktop-Version,
+keine experimentellen Features, kein systemd, kein Workspace-Umbau,
+keine zusätzlichen Skills, kein MCP, kein mem0/Humalike.
+
+- [x] Hermes Agent nativ installiert für `hermes_hugo` über den
+      offiziellen Installer (v0.19.0, Install-Methode `git`)
+- [x] `ripgrep`, `ffmpeg` nachinstalliert (vom Installer selbst
+      vorgeschlagen); Playwright/Chromium-Setup versucht, aber
+      fehlgeschlagen und bewusst nicht weiter verfolgt (außerhalb des
+      Scopes CLI/API Server/Gateway/Profil)
+- [x] Config auf Schema-Version 33 migriert, ohne API-Keys/Credentials
+- [x] CLI, API Server und Gateway manuell verifiziert (siehe
+      [ARCHITECTURE.md](ARCHITECTURE.md#hermes-installation-sprint-4)),
+      danach sauber gestoppt — kein systemd-Service
+- [x] Standard-Skills (65 builtin) und Standard-MCP-Katalog (0
+      konfiguriert, 4 verfügbar) beobachtet, nicht verändert
+- [x] Workspace-Struktur ausschließlich beobachtet, nicht angepasst
+- [x] `docs/hermes/` um reale Beobachtungen ergänzt, klar getrennt von
+      der Doku-Recherche aus Sprint 2 (inkl. mehrerer entdeckter
+      Doku-vs-Realität-Abweichungen, siehe
+      [docs/hermes/OPEN_QUESTIONS.md](docs/hermes/OPEN_QUESTIONS.md))
+- [x] `INSTALL.md`, `ARCHITECTURE.md`, `CHANGELOG.md` aktualisiert
+
+Ausdrücklich nicht Teil dieses Sprints: Modell-/Provider-Konfiguration,
+Personas, Memory-Engine (mem0/Humalike), zusätzliche Skills, MCP-Server,
+systemd, Hermes-Installation für `hermes_christiane`.
+
+## Sprint 5+ — geplant (noch nicht begonnen)
 
 Grobe, unverbindliche Reihenfolge — Details folgen jeweils im Sprint:
 
-- Modell-/Provider-Entscheidung (ADR)
-- Installation von Hermes Agent nach `docs/hermes/INSTALLATION.md`, je
-  Companion-Benutzer
+- Modell-/Provider-Entscheidung (ADR) für `hermes_hugo`
+- Hermes-Installation für `hermes_christiane` nach demselben Muster
 - OpenWebUI
 - mem0-Alternative (falls über Hermes' eingebaute Provider-Plugins
   hinaus benötigt — siehe `docs/hermes/MEMORY.md`)
 - Humalike
-- Skills, MCP-Server (bereits durch Hermes abgedeckt, siehe
-  `docs/hermes/SKILLS.md`, `docs/hermes/MCP.md` — hier nur produktive
-  Nutzung/Konfiguration)
+- Produktive Skills-/MCP-Nutzung (bereits durch Hermes abgedeckt, siehe
+  `docs/hermes/SKILLS.md`, `docs/hermes/MCP.md`)
 - systemd-Services (`hermes gateway install`), sobald ein Profil/Nutzer
   produktiv laufen soll
 

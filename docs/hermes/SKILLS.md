@@ -43,6 +43,50 @@ Skills separat unter `optional-skills/`. Vertrauensstufen: `builtin`,
 **Nicht dokumentiert:** eine einzelne, vollständige Enumeration aller
 gebündelten Skills/Kategorien an einer Stelle.
 
+### Real beobachtetes Skill-Inventar — hermes_hugo (Phase 4, 2026-07-24)
+
+`hermes skills list` nach frischer Installation, ohne jede eigene
+Änderung:
+
+**0 hub-installed, 65 builtin, 0 local — 65 enabled, 0 disabled**, über
+13 Kategorien (Anzahl Skills je Kategorie in Klammern):
+
+| Kategorie | Skills |
+|---|---|
+| `autonomous-ai-agents` (5) | claude-code, codex, computer-use, hermes-agent, opencode |
+| `creative` (13) | architecture-diagram, ascii-art, ascii-video, baoyu-infographic, claude-design, comfyui, design-md, excalidraw, humanizer, manim-video, p5js, popular-web-designs, pretext, sketch, songwriting-and-ai-music, touchdesigner-mcp |
+| `email` (1) | himalaya |
+| `github` (6) | codebase-inspection, github-auth, github-code-review, github-issues, github-pr-workflow, github-repo-management |
+| `media` (3) | gif-search, songsee, youtube-content |
+| `mlops` (5) | evaluating-llms-harness, huggingface-hub, llama-cpp, serving-llms-vllm, weights-and-biases |
+| `note-taking` (1) | obsidian |
+| `productivity` (11) | airtable, docx, google-workspace, maps, nano-pdf, notion, ocr-and-documents, pdf, powerpoint, teams-meeting-pipeline, xlsx |
+| `research` (5) | arxiv, blogwatcher, llm-wiki, polymarket, research-paper-writing |
+| `smart-home` (1) | openhue |
+| `social-media` (1) | xurl |
+| `software-development` (10) | dogfood, hermes-agent-skill-authoring, node-inspect-debugger, plan, python-debugpy, requesting-code-review, simplify-code, spike, systematic-debugging, test-driven-development |
+
+Alle mit `Source: builtin`, `Trust: builtin`, `Status: enabled`. Kein
+Hub-Skill, kein lokal erstellter Skill — Zustand entspricht exakt "nur
+prüfen, welche Skills Hermes standardmäßig bereitstellt", keine eigene
+Ergänzung vorgenommen.
+
+**Beobachtete Diskrepanz (nicht aufgelöst):** Das Sync-Log des
+Installers meldete beim Setup "Done: **69** new, 0 updated, 0
+unchanged. 69 total bundled" (mit einer Liste von 69 Skill-Namen, u. a.
+zusätzlich `xlsx`-Nachbarskills wie `apple-reminders`, `apple-notes`,
+`findmy`, `imessage`, `nano-pdf`, `polymarket`, `openhue` — teils
+identisch mit der obigen Liste, teils abweichend benannt). `hermes
+skills list` zeigt danach nur 65 aktivierte Skills, kategorisiert unter
+`~/.hermes/skills/` in den 13 Ordnern oben — eine `apple/`-Kategorie
+existiert im Dateisystem (`ls ~/.hermes/skills/` zeigte einen
+`apple`-Ordner mit 5 Einträgen: vermutlich `apple-reminders`,
+`apple-notes`, `findmy`, `imessage` u. a.), taucht aber **nicht** in der
+`hermes skills list`-Tabelle auf. Mögliche Ursache: plattform-/system-
+abhängiges Ausblenden (z. B. Apple-Skills nur auf macOS relevant) — in
+der offiziellen Doku nicht erklärt, hier als reine Beobachtung
+festgehalten, nicht als Vermutung ausgegeben.
+
 ## Skill Priorität
 
 Explizit dokumentierte Regeln:
