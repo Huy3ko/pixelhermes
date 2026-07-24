@@ -37,6 +37,7 @@ Quelle: [github.com/NousResearch/hermes-agent](https://github.com/NousResearch/h
 | Modelle | [MODELS.md](MODELS.md) | OpenAI-kompatible Provider, Grok, OpenRouter, lokale Modelle |
 | Synthese | [BEST_PRACTICES.md](BEST_PRACTICES.md), [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) | Kapitelübergreifende Empfehlungen und offene Fragen |
 | Produktivbetrieb (Phase 6) | [PRODUCTIVE_RUNTIME.md](PRODUCTIVE_RUNTIME.md), [ASSESSMENT.md](ASSESSMENT.md) | Grok+Exa produktiv konfiguriert und real verifiziert, inkl. eines kritischen, ungelösten Fundes (Exa/`web_search` wird nicht zuverlässig aufgerufen) |
+| Companion Stack (Sprint 7) | [HONCHO.md](HONCHO.md), [COMPANION_STACK.md](COMPANION_STACK.md) | Selbstgehosteter Honcho-Memory-Server + lokaler Embedding-Server (llama.cpp), real installiert, konfiguriert und Ende-zu-Ende verifiziert (Cross-Session-Recall bestätigt) |
 
 ## Architektur in einem Satz
 

@@ -149,7 +149,39 @@ Ausdrücklich nicht Teil dieses Sprints: OpenWebUI, OpenRouter, Ollama,
 mem0, Humalike, zusätzliche Skills, weitere Benutzer, Personas, eigene
 Workspace-Struktur, eigene Datenbanken, systemd.
 
-## Sprint 7+ — geplant (noch nicht begonnen)
+## Sprint 7 — Companion Foundation (abgeschlossen)
+
+Ziel: den Companion-Stack um offiziell unterstützte Erweiterungen
+ergänzen, ausschließlich self-hosted. Keine Forks, keine
+Runtime-Patches an Hermes.
+
+- [x] Humalike geprüft — bewusst abgelehnt (kostenpflichtiger externer
+      Cloud-Dienst, widerspricht "Self Hosted")
+- [x] PostgreSQL 17 + pgvector, Redis installiert
+- [x] Lokaler Embedding-Server (llama.cpp + nomic-embed-text-v1.5,
+      768-dim) als eigener systemd-Service — OpenAI und Google Gemini
+      als Cloud-Alternativen geprüft und verworfen
+      ([ADR 0004](ADR/0004-local-embedding-server-for-honcho.md))
+- [x] Honcho selbstgehostet, als einziger externer Memory-Provider
+      konfiguriert; Text-Generierung über bestehenden Grok-Key,
+      Embeddings vollständig lokal
+- [x] Hermes mit Honcho verbunden, Ende-zu-Ende verifiziert inkl.
+      echtem Cross-Session-Recall
+- [x] Erste geteilte Systemdienste des Projekts (`honcho`,
+      `embeddings`) unter `/opt/companion/`
+      ([ADR 0003](ADR/0003-shared-services-under-opt-companion.md))
+- [x] `docs/hermes/HONCHO.md`, `docs/hermes/COMPANION_STACK.md` neu;
+      Top-Level-Docs aktualisiert
+- [~] Super Hermes (Drittanbieter-Skill-Paket) und Hermes Agent
+      Self-Evolution (offizielles NousResearch-Repo, kostenpflichtig
+      pro Lauf) geprüft — Installation/Konfiguration als separate,
+      dokumentierte Schritte im Sprintverlauf
+
+Ausdrücklich nicht Teil dieses Sprints: OpenWebUI, mem0, weitere
+Cloud-Provider (OpenRouter, Ollama, OpenAI, Gemini),
+Hermes-Installation für `hermes_christiane`, Personas.
+
+## Sprint 8+ — geplant (noch nicht begonnen)
 
 Grobe, unverbindliche Reihenfolge — Details folgen jeweils im Sprint:
 
@@ -158,14 +190,11 @@ Grobe, unverbindliche Reihenfolge — Details folgen jeweils im Sprint:
   produktiv"
 - Mehrtägige tatsächliche Nutzung, um Sprint 6's Bewertung zu
   vervollständigen (inkl. eines echten Curator-Laufs)
-- Hermes-Installation für `hermes_christiane` nach demselben Muster
+- Hermes-Installation für `hermes_christiane` auf demselben Stack
+  (Grok, Exa, Honcho, lokale Embeddings)
 - OpenWebUI
-- mem0-Alternative (falls über Hermes' eingebaute Provider-Plugins
-  hinaus benötigt — siehe `docs/hermes/MEMORY.md`)
-- Humalike
 - Produktive Skills-/MCP-Nutzung (bereits durch Hermes abgedeckt, siehe
   `docs/hermes/SKILLS.md`, `docs/hermes/MCP.md`)
-- systemd-Services (`hermes gateway install`), sobald ein Profil/Nutzer
-  dauerhaft laufen soll
+- Multi-User-Ausbau, Persona-Layer
 
 Diese Liste ist eine Absichtserklärung, kein Zeitplan.

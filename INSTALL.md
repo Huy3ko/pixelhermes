@@ -288,9 +288,107 @@ funktionierend — mit einem zentralen, offenen Problem (Exa-Suche wird
 nicht zuverlässig genutzt) und mehreren kleineren realen Funden.
 Vollständige Bewertung: [docs/hermes/ASSESSMENT.md](docs/hermes/ASSESSMENT.md).
 
+## Sprint 7 — Companion Foundation (Honcho, self-hosted)
+
+Ziel: den Companion-Stack um einen selbstgehosteten externen
+Memory-Provider erweitern. Humalike wurde geprüft, dann bewusst
+abgelehnt (kostenpflichtiger externer Cloud-Dienst, widerspricht "Self
+Hosted"). Vollständige Beweisführung:
+[docs/hermes/HONCHO.md](docs/hermes/HONCHO.md),
+[docs/hermes/COMPANION_STACK.md](docs/hermes/COMPANION_STACK.md).
+
+### System-Pakete und Systembenutzer
+
+```bash
+sudo apt-get install -y postgresql postgresql-17-pgvector redis-server
+sudo useradd -r -m -d /opt/companion/honcho -s /usr/sbin/nologin honcho
+sudo useradd -r -m -d /opt/companion/embeddings -s /usr/sbin/nologin embeddings
+sudo -u postgres psql -c "CREATE ROLE honcho WITH LOGIN PASSWORD '<generated>';"
+sudo -u postgres psql -c "CREATE DATABASE honcho OWNER honcho;"
+sudo -u postgres psql -d honcho -c "CREATE EXTENSION IF NOT EXISTS vector;"
+```
+
+### Lokaler Embedding-Server (llama.cpp, statt Cloud-Provider)
+
+Begründung: Honcho unterstützt nur `openai`/`gemini` als
+Embedding-Transport; Grok bietet keine Embeddings. OpenAI und Gemini
+wurden als Cloud-Optionen explizit erwogen und abgelehnt — siehe
+[ADR 0004](ADR/0004-local-embedding-server-for-honcho.md).
+
+```bash
+sudo -u embeddings -H bash -lc 'git clone https://github.com/ggml-org/llama.cpp.git ~/llama.cpp'
+sudo -u embeddings -H bash -lc 'cd ~/llama.cpp && cmake -B build -DCMAKE_BUILD_TYPE=Release -DGGML_NATIVE=ON -DLLAMA_CURL=OFF && cmake --build build --target llama-server -j$(nproc)'
+sudo -u embeddings -H bash -lc 'curl -fL -o ~/models/nomic-embed-text-v1.5.Q8_0.gguf "https://huggingface.co/nomic-ai/nomic-embed-text-v1.5-GGUF/resolve/main/nomic-embed-text-v1.5.Q8_0.gguf"'
+# systemd unit companion-embeddings.service: --embedding --pooling mean --host 127.0.0.1 --port 8081 --api-key <generated>
+```
+Verifiziert: `curl -X POST http://127.0.0.1:8081/v1/embeddings ...` →
+echter 768-dim-Vektor, OpenAI-kompatibles Antwortformat; ohne
+Authorization-Header → `HTTP 401`.
+
+### Honcho (self-hosted)
+
+```bash
+sudo -u honcho -H bash -lc 'git clone https://github.com/plastic-labs/honcho.git ~/honcho'
+sudo -u honcho -H bash -lc 'cd ~/honcho && uv sync'
+# .env: DB_CONNECTION_URI (lokales Postgres), Text-Gen über bestehenden
+# XAI_API_KEY (base_url=api.x.ai), Embeddings über lokalen llama-server
+sudo -u honcho -H bash -lc 'cd ~/honcho && uv run alembic upgrade head'
+```
+Realer, dokumentierter Fehler beim ersten Start (Standard-Vektor-
+dimension 1536 statt unserer 768) — offizieller Fix angewendet:
+```bash
+sudo -u honcho -H bash -lc 'cd ~/honcho && uv run python scripts/configure_embeddings.py --yes'
+```
+Danach zwei systemd-Units (`companion-honcho-api.service`,
+`companion-honcho-deriver.service`), beide `enable --now`, beide
+`active` bestätigt. `curl http://127.0.0.1:8000/health` → `{"status":"ok"}`.
+
+### Hermes mit Honcho verbinden
+
+```bash
+sudo -u hermes_hugo -H bash -lc 'cd ~/.hermes/hermes-agent && source venv/bin/activate && uv pip install honcho-ai'
+sudo -u hermes_hugo -H bash -lc 'hermes config set memory.provider honcho'
+# ~/.hermes/honcho.json manuell geschrieben (Format aus dem Hermes-Quellcode
+# bestätigt, nicht geraten): {"baseUrl": "http://127.0.0.1:8000", "hosts": {...}}
+```
+`hermes memory status` vorher: `Status: not available ✗`. Danach:
+`Status: available ✓`.
+
+### Verifikation (real, Ende-zu-Ende)
+
+- Reale Nachricht mit persönlicher Präferenz → `honcho_profile`-Tool
+  feuerte real; Zeilen in Postgres (`peers`, `queue`, `documents` mit
+  echtem 768-dim-Embedding) per SQL bestätigt, nicht nur der
+  CLI-Ausgabe geglaubt.
+- **Neue Session** fragte nach den Präferenzen → `honcho_search` mit
+  echter semantischer Query, korrekte Antwort aus der vorherigen
+  Session — der eigentliche Zweck von Honcho, real bestätigt.
+- `hermes doctor` danach: `Memory Provider: ✓ Honcho connected
+  workspace=hermes mode=hybrid freq=async`; alle zuvor funktionierenden
+  Tool-Kategorien (Grok, `web`, `x_search`, Workspace, Sessions)
+  weiterhin ✓ — keine Regression durch die Erweiterung.
+
+### Super Hermes und Self-Evolution (geprüft, third-party)
+
+Zwei zusätzliche, im Sprintverlauf angefragte Erweiterungen wurden
+recherchiert und bewusst nicht blind installiert:
+
+- **Super Hermes** (`Cranot/super-hermes`) — kein offizielles Nous-
+  Research-Projekt, sondern ein Drittanbieter-Skill-Paket. Nach
+  Rücksprache: Policy erweitert (Drittanbieter erlaubt, wenn
+  Kern-Dateien unangetastet bleiben, dokumentierte Erweiterungs-
+  mechanismen genutzt werden, und die Erweiterung vollständig
+  entfernbar ist) — manuelle Installation (ohne `install.sh`) folgt
+  als eigener Schritt.
+- **Hermes Agent Self-Evolution** (`NousResearch/hermes-agent-self-
+  evolution`) — verifiziert als echtes, offizielles NousResearch-Repo
+  (per GitHub-API-Abfrage bestätigt, nicht nur der URL geglaubt).
+  Kostet laut README $2-10 pro Optimierungslauf — Installation/
+  Konfiguration ohne echten Optimierungslauf folgt als eigener
+  Schritt.
+
 ## Nächste Schritte
 
 Ursache der Exa/`web_search`-Nichtnutzung klären (ggf. Upstream-Issue).
-Erst danach: `hermes_christiane` nach demselben Muster, oder weitere
-Erweiterungen gemäß [ASSESSMENT.md](docs/hermes/ASSESSMENT.md). Siehe
-[ROADMAP.md](ROADMAP.md).
+`hermes_christiane` auf denselben Stack (Grok, Exa, Honcho, lokale
+Embeddings) bringen. Siehe [ROADMAP.md](ROADMAP.md).

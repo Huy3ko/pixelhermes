@@ -15,8 +15,13 @@ konfiguriert — Grok (xAI) als einziges LLM, Exa als einzige Suche —
 siehe [Produktivbetrieb](#produktivbetrieb-sprint-6) unten. (Sprint 5,
 ein geplantes internes Hermes-Audit, wurde vom Nutzer zugunsten des
 Produktivbetriebs übersprungen — der geschriebene Plan wurde verworfen,
-nicht ausgeführt.) Es ist weiterhin kein systemd-Service aktiv, es ist
-weiterhin kein OpenWebUI, mem0 oder Humalike installiert.
+nicht ausgeführt.) Seit Sprint 7 läuft zusätzlich ein selbstgehosteter
+Companion-Stack aus Honcho (externer Memory-Provider) und einem
+lokalen Embedding-Server (llama.cpp) — die ersten echten
+systemd-Services des Projekts, siehe
+[Companion Stack](#companion-stack-sprint-7) unten. Es ist weiterhin
+kein OpenWebUI, mem0 oder Humalike installiert (Humalike wurde in
+Sprint 7 geprüft und bewusst abgelehnt — siehe unten).
 
 ## Architekturprinzipien
 
@@ -212,6 +217,54 @@ nicht im Hermes-Quellcode weiterverfolgt (würde "Upstream First"
 verletzen, wenn daraus ein eigener Patch entstünde) — stattdessen
 dokumentiert und als offene Frage markiert.
 
+## Companion Stack (Sprint 7)
+
+Erste Erweiterung über reines Hermes hinaus: ein selbstgehosteter
+externer Memory-Provider (Honcho) plus ein lokaler Embedding-Server
+(llama.cpp), beide als eigene, unprivilegierte Systemdienste unter
+`/opt/companion/` — siehe [ADR 0003](ADR/0003-shared-services-under-opt-companion.md)
+und [ADR 0004](ADR/0004-local-embedding-server-for-honcho.md). Volle
+Beweisführung: [docs/hermes/HONCHO.md](docs/hermes/HONCHO.md),
+Gesamtbild: [docs/hermes/COMPANION_STACK.md](docs/hermes/COMPANION_STACK.md).
+
+**Humalike wurde geprüft und bewusst abgelehnt:** offiziell dokumentiert
+(`github.com/Humalike/hermes-humalike-plugin`), aber abhängig von einem
+kostenpflichtigen externen Cloud-Dienst — widerspricht dem
+"Self Hosted"-Prinzip. Nicht installiert, keine Konfiguration
+verändert.
+
+**Honcho** (`plastic-labs/honcho`, offizieller Hermes-Memory-Provider-
+Plugin-Partner) läuft vollständig selbstgehostet:
+
+| Komponente | Läuft als | Zweck |
+|---|---|---|
+| PostgreSQL 17 + pgvector | Systembenutzer `postgres` (Debian-Paket) | Honchos persistenter Speicher |
+| Redis | Systembenutzer `redis` (Debian-Paket) | von Honcho vorgesehen, aktuell ungenutzt (Cache im In-Memory-Modus) |
+| Honcho API (`fastapi run`) | Systembenutzer `honcho` | REST-API, Port 127.0.0.1:8000 |
+| Honcho Deriver (Hintergrund-Worker) | Systembenutzer `honcho` | asynchrone Gedächtnis-Ableitung |
+| Embedding-Server (llama.cpp) | Systembenutzer `embeddings` | lokale Embeddings, Port 127.0.0.1:8081, API-Key-geschützt |
+
+Honchos eigene Text-Generierung (Deriver/Dialectic/Summary/Dream) nutzt
+den bereits vorhandenen xAI/Grok-Key (kein neuer LLM-Provider);
+Embeddings laufen vollständig lokal über `nomic-embed-text-v1.5`
+(768 Dimensionen) — kein Cloud-Embedding-Provider, siehe
+[ADR 0004](ADR/0004-local-embedding-server-for-honcho.md) für die
+Begründung (OpenAI und Gemini wurden explizit erwogen und verworfen).
+
+**Real Ende-zu-Ende verifiziert** (nicht nur Prozess-Start):
+
+| Prüfung | Ergebnis |
+|---|---|
+| Hermes → Honcho verbunden | `hermes doctor` → `Memory Provider: ✓ Honcho connected workspace=hermes mode=hybrid freq=async` |
+| Schreibpfad | echter `honcho_profile`-Tool-Call, echte Zeilen in `peers`/`documents`/`queue`-Tabellen (per SQL bestätigt, nicht nur CLI-Ausgabe geglaubt) |
+| Embedding-Pipeline | Deriver → lokaler llama-server → 768-dim-Vektor real in `pgvector` gespeichert |
+| **Cross-Session-Recall** | neue Session erinnert sich korrekt an in einer früheren Session gespeicherte Nutzerpräferenz — der eigentliche Zweck von Honcho, real bestätigt |
+| Grok/Exa/Workspace weiterhin funktionsfähig | `hermes doctor` zeigt alle zuvor funktionierenden Tool-Kategorien unverändert ✓ |
+
+Kein Hermes-Kerndateien verändert — ausschließlich `hermes config set`,
+eine `honcho.json` am dokumentierten Ort, und die neuen, komplett
+separaten Systemdienste.
+
 ## Workspace
 
 Wird nicht im Repository nachgebaut. Hermes bringt seine eigene
@@ -221,12 +274,15 @@ seit Sprint 4 real beobachteten Verzeichnisstruktur unter
 `/srv/companion/hermes_hugo/.hermes/`. Es wurde bewusst **nicht**
 verändert, erweitert oder um eigene Ordner ergänzt — nur beobachtet.
 
-## Ausdrücklich nicht Teil von Sprint 1–6
+## Ausdrücklich nicht Teil von Sprint 1–7
 
-- Hermes Workspace-Anpassungen, OpenWebUI, mem0, Humalike
+- Hermes Workspace-Anpassungen, OpenWebUI, mem0, Humalike (geprüft und
+  abgelehnt, siehe oben)
 - Zusätzliche (Nicht-Hermes-eigene) Skills, konfigurierte MCP-Server
-- Weitere LLM-/Such-Provider neben Grok/Exa (kein OpenRouter, kein
-  Ollama)
-- systemd-Services (laufend oder aktiviert)
-- Personas, eigene Memory-/Workspace-Konfiguration
+- Weitere LLM-/Such-/Cloud-Embedding-Provider neben Grok/Exa (kein
+  OpenRouter, kein Ollama, kein OpenAI, kein Google Gemini)
+- Personas, eigene Hermes-Workspace-Konfiguration
 - Alles für `hermes_christiane` außer Konto und leerem Home-Verzeichnis
+  (Honcho und der Embedding-Server sind bereits für spätere
+  Mitnutzung durch `hermes_christiane` ausgelegt, siehe
+  [docs/hermes/COMPANION_STACK.md](docs/hermes/COMPANION_STACK.md))

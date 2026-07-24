@@ -7,19 +7,26 @@ später die Infrastructure-as-Code-Definitionen.
 
 ## Status
 
-**Sprint 4: Native Hermes Installation** — Repository-Fundament
-(Sprint 1), Hermes-Architektur-Recherche (Sprint 2, siehe
-[docs/hermes/](docs/hermes/)), reale Linux-Runtime (Sprint 3) und ein
-nativ installierter, unveränderter Hermes-Agent für `hermes_hugo`
-(CLI, API Server, Gateway, Default-Profil) sind vorhanden.
+**Sprint 7: Companion Foundation** — Repository-Fundament (Sprint 1),
+Hermes-Architektur-Recherche (Sprint 2, siehe [docs/hermes/](docs/hermes/)),
+reale Linux-Runtime (Sprint 3), ein nativ installierter Hermes-Agent
+für `hermes_hugo` (Sprint 4), produktiv konfiguriert mit Grok als LLM
+und Exa als Suche (Sprint 6), und ein selbstgehosteter Companion-Stack
+aus Honcho (externer Memory-Provider) und einem lokalen
+Embedding-Server (llama.cpp) sind vorhanden — siehe
+[docs/hermes/COMPANION_STACK.md](docs/hermes/COMPANION_STACK.md).
 
-Ausdrücklich **weiterhin nicht** installiert/angelegt:
+Ausdrücklich **weiterhin nicht** installiert:
 
-- OpenWebUI, mem0, Humalike
-- Modell-/Provider-Credentials, Personas, Memory-Konfiguration
+- OpenWebUI, mem0
+- Humalike (geprüft, bewusst abgelehnt — kostenpflichtiger externer
+  Cloud-Dienst, widerspricht "Self Hosted")
+- Weitere Cloud-LLM-/Such-/Embedding-Provider (kein OpenRouter, kein
+  Ollama, kein OpenAI, kein Google Gemini)
 - Zusätzliche (Nicht-Hermes-eigene) Skills, konfigurierte MCP-Server
-- systemd-Services
-- Alles für `hermes_christiane` außer Konto und leerem Home-Verzeichnis
+- Personas, eigene Hermes-Workspace-Konfiguration
+- Hermes-Installation für `hermes_christiane` (Konto existiert bereits;
+  Honcho/Embedding-Server sind bereits für spätere Mitnutzung ausgelegt)
 
 Details siehe [ROADMAP.md](ROADMAP.md).
 

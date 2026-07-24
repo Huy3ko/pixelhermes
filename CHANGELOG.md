@@ -3,6 +3,57 @@
 Format angelehnt an [Keep a Changelog](https://keepachangelog.com/).
 Commits folgen [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [Sprint 7] - 2026-07-24 - Companion Foundation
+
+Erste Erweiterung über reines Hermes hinaus: ein selbstgehosteter
+Companion-Stack (Honcho + lokaler Embedding-Server), plus geprüfte
+(teils abgelehnte) Drittanbieter-Erweiterungen.
+
+### Added
+
+- PostgreSQL 17 + pgvector, Redis installiert (Debian-Pakete)
+- Dedizierte Systembenutzer `honcho`, `embeddings` unter
+  `/opt/companion/` — erste geteilte Infrastrukturdienste des Projekts
+  ([ADR 0003](ADR/0003-shared-services-under-opt-companion.md))
+- Lokaler, vollständig selbstgehosteter Embedding-Server
+  (`llama.cpp` + `nomic-embed-text-v1.5`, 768-dim, API-Key-geschützt,
+  systemd-Service `companion-embeddings.service`) — OpenAI und Google
+  Gemini als Cloud-Alternativen geprüft und bewusst verworfen
+  ([ADR 0004](ADR/0004-local-embedding-server-for-honcho.md))
+- Honcho selbstgehostet (`plastic-labs/honcho`), Text-Generierung über
+  den bestehenden xAI/Grok-Key, Embeddings über den lokalen Server;
+  zwei systemd-Services (`companion-honcho-api`,
+  `companion-honcho-deriver`); Datenbank-Migration inkl. einem realen,
+  dokumentierten Vektordimensions-Fehler und dessen offiziellem Fix
+- Hermes mit Honcho verbunden (`memory.provider: honcho`,
+  `~/.hermes/honcho.json`); Ende-zu-Ende verifiziert inkl.
+  **Cross-Session-Recall** (neue Session erinnert sich korrekt an eine
+  in einer früheren Session gespeicherte Nutzerpräferenz)
+- `docs/hermes/HONCHO.md`, `docs/hermes/COMPANION_STACK.md` neu;
+  `docs/hermes/OVERVIEW.md`, `ARCHITECTURE.md`, `INSTALL.md`,
+  `README.md` aktualisiert
+
+### Evaluated, not installed
+
+- **Humalike** — offiziell dokumentiertes Hermes-Plugin, aber
+  abhängig von einem kostenpflichtigen externen Cloud-Dienst; bewusst
+  abgelehnt, widerspricht "Self Hosted"
+- **Super Hermes** (`Cranot/super-hermes`) — Drittanbieter-Skill-Paket,
+  kein offizielles Nous-Research-Projekt; Repository vollständig
+  geprüft; Installationsentscheidung (manuell, ohne `install.sh`)
+  läuft als eigener, dokumentierter Schritt
+- **Hermes Agent Self-Evolution** (`NousResearch/hermes-agent-self-
+  evolution`) — als echtes offizielles Repo verifiziert (GitHub-API,
+  nicht nur URL); kostenpflichtig pro Optimierungslauf ($2-10);
+  Installation/Konfiguration ohne echten Lauf folgt als eigener Schritt
+
+### Not included (bewusst)
+
+- OpenWebUI, mem0
+- Weitere Cloud-Provider (OpenRouter, Ollama, OpenAI, Google Gemini)
+- Hermes-Installation für `hermes_christiane`
+- Personas, eigene Hermes-Workspace-Konfiguration
+
 ## [Sprint 6] - 2026-07-24 - Productive Runtime
 
 Sprint 5 (geplantes internes Hermes-Audit) wurde übersprungen — Plan
