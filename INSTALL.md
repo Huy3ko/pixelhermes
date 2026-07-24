@@ -387,8 +387,78 @@ recherchiert und bewusst nicht blind installiert:
   Konfiguration ohne echten Optimierungslauf folgt als eigener
   Schritt.
 
+## Phase 8.1 — OpenWebUI ↔ Hermes Agent API
+
+Ziel: unverändertes, offizielles OpenWebUI über Hermes' eigene
+OpenAI-kompatible API verbinden. Die ursprüngliche Annahme einer
+separaten "Hermes Agent API" wurde per Quellcode-Prüfung widerlegt
+(`gateway/platforms/api_server.py`: `/v1/chat/completions` instanziiert
+dieselbe `AIAgent`-Klasse wie CLI/Gateway-Plattformen) — siehe
+[ADR 0006](ADR/0006-openwebui-via-hermes-openai-endpoint.md). Volle
+Beweisführung: [docs/hermes/OPENWEBUI.md](docs/hermes/OPENWEBUI.md).
+
+### Hermes-API-Server aktivieren
+
+```bash
+# API_SERVER_ENABLED/API_SERVER_KEY sind echte Env-Vars (os.getenv()),
+# keine config.yaml-Schlüssel — direkt in .env geschrieben, nicht per
+# hermes config set (derselbe Fehler wie HONCHO_BASE_URL in Sprint 7).
+echo "API_SERVER_ENABLED=true" >> ~/.hermes/.env
+echo "API_SERVER_KEY=<generated>" >> ~/.hermes/.env
+
+sudo loginctl enable-linger hermes_hugo
+sudo -u hermes_hugo -H env XDG_RUNTIME_DIR="/run/user/$(id -u hermes_hugo)" \
+  bash -lc 'hermes gateway install && systemctl --user enable --now hermes-gateway.service'
+```
+Verifiziert: `curl http://127.0.0.1:8642/v1/models` →
+`{"id": "hermes-agent", ...}`; ein echter `/v1/chat/completions`-Aufruf
+lieferte eine korrekte Antwort mit `prompt_tokens: 18334` (echte
+Agent-Kontext-Injektion, kein Toy-Endpoint).
+
+### OpenWebUI installieren (offiziell, pip, kein Docker)
+
+```bash
+sudo useradd -r -m -d /opt/companion/openwebui -s /usr/sbin/nologin openwebui
+sudo -u openwebui -H bash -lc 'uv venv --python 3.11 && source .venv/bin/activate && uv pip install open-webui'
+# Python 3.13 (System-Default) wird von OpenWebUI explizit nicht unterstützt.
+```
+
+Konfiguration vollständig über Umgebungsvariablen (offiziell
+dokumentierter Headless-Pfad, kein Workaround):
+```
+WEBUI_ADMIN_EMAIL=hugo@companion.local
+WEBUI_ADMIN_PASSWORD=<generated>
+WEBUI_ADMIN_NAME=Hugo
+OPENAI_API_BASE_URL=http://127.0.0.1:8642/v1
+OPENAI_API_KEY=<Hermes API_SERVER_KEY>
+ENABLE_OLLAMA_API=false
+```
+`companion-openwebui.service` (systemd, User=openwebui), gebunden an
+`127.0.0.1:8080` (nicht den Standard `0.0.0.0` — Konsistenz mit jedem
+anderen Dienst in diesem Stack, auch wenn `ufw` Port 8080 ohnehin schon
+blockierte).
+
+### Verifikation (real, Ende-zu-Ende)
+
+- `GET /api/config` nach Start → `"enable_signup": false` — Single-User
+  automatisch erzwungen, sobald Hugo als erster Nutzer existiert.
+- Login als Hugo über OpenWebUIs eigene Auth-API, `GET /api/models` →
+  `hermes-agent` sichtbar.
+- **Echter Chat durch OpenWebUIs eigenes Backend**
+  (`POST /api/chat/completions`, nicht direkt gegen Hermes):
+  korrekte Antwort, `prompt_tokens: 18338` — nahezu identisch zum
+  direkten Hermes-Test, starkes Indiz für denselben echten Backend-Pfad.
+- **Gegengeprüft in Hermes' eigenem `agent.log`:** beide Aufrufe
+  erscheinen mit `platform=api_server`, `model=grok-build-0.1
+  provider=xai` — echte Agent-Turns, nicht simuliert.
+
+Keine Inkompatibilitäten bei der eigentlichen Verbindung — nur zwei
+Konfigurationsort-Fehler auf Hermes-Seite (env statt config.yaml),
+keine Integrationsprobleme zwischen OpenWebUI und Hermes selbst.
+
 ## Nächste Schritte
 
 Ursache der Exa/`web_search`-Nichtnutzung klären (ggf. Upstream-Issue).
-`hermes_christiane` auf denselben Stack (Grok, Exa, Honcho, lokale
+Feature-Tests durch OpenWebUI hindurch (Uploads, Tools, Memory,
+Workspace, Sessions, Skills, Curator). `hermes_christiane` auf denselben Stack (Grok, Exa, Honcho, lokale
 Embeddings) bringen. Siehe [ROADMAP.md](ROADMAP.md).

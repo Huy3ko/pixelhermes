@@ -184,10 +184,38 @@ Ausdrücklich nicht Teil dieses Sprints: OpenWebUI, mem0, weitere
 Cloud-Provider (OpenRouter, Ollama, OpenAI, Gemini),
 Hermes-Installation für `hermes_christiane`, Personas.
 
-## Sprint 8+ — geplant (noch nicht begonnen)
+## Phase 8.1 — OpenWebUI ↔ Hermes Agent API (abgeschlossen)
+
+Ziel: unverändertes, offizielles OpenWebUI über Hermes' eigene
+OpenAI-kompatible API verbinden, nur ein Benutzer (Hugo), kein Caddy/
+HTTPS/DuckDNS/Reverse-Proxy. Stop nach bestätigter Verbindung — keine
+Feature-Tests.
+
+- [x] Prämisse "separate Hermes Agent API" per Quellcode geprüft und
+      widerlegt (`/v1/chat/completions` = dieselbe `AIAgent`-Klasse wie
+      CLI/Gateway) — Vergleich mit OpenClaw bestätigte dasselbe Muster
+      dort ([ADR 0006](ADR/0006-openwebui-via-hermes-openai-endpoint.md))
+- [x] Hermes-API-Server aktiviert, Gateway erstmals dauerhaft betrieben
+      (offiziell `hermes gateway install`)
+- [x] OpenWebUI offiziell installiert (pip, Python 3.11, kein Docker),
+      als systemd-Service, `127.0.0.1`-only
+- [x] Einziger Benutzer (Hugo) per offiziellem Headless-Pfad angelegt,
+      Signup automatisch geschlossen
+- [x] Verbindung real Ende-zu-Ende verifiziert (Prompt-Token-Parität,
+      `platform=api_server` in Hermes' `agent.log`)
+- [x] `docs/hermes/OPENWEBUI.md` neu, Top-Level-Docs aktualisiert
+
+Ausdrücklich nicht Teil dieser Phase: Caddy, HTTPS, DuckDNS,
+Reverse-Proxy, Mehrbenutzerbetrieb, Feature-Tests durch OpenWebUI
+(Uploads, Tools, Memory, Workspace, Sessions, Skills, Curator).
+
+## Phase 8.2+ / Sprint 8+ — geplant (noch nicht begonnen)
 
 Grobe, unverbindliche Reihenfolge — Details folgen jeweils im Sprint:
 
+- Feature-Validierung durch OpenWebUI hindurch (Uploads, Tools, Memory/
+  Honcho, Workspace, Sessions, Super-Hermes-Skills, Curator) — direkte
+  Fortsetzung von Phase 8.1
 - Ursache der Exa/`web_search`-Nichtnutzung klären (ggf. Upstream-Issue
   bei Nous Research melden) — vor jeder Aussage "Suche funktioniert
   produktiv"
@@ -195,9 +223,9 @@ Grobe, unverbindliche Reihenfolge — Details folgen jeweils im Sprint:
   vervollständigen (inkl. eines echten Curator-Laufs)
 - Hermes-Installation für `hermes_christiane` auf demselben Stack
   (Grok, Exa, Honcho, lokale Embeddings)
-- OpenWebUI
 - Produktive Skills-/MCP-Nutzung (bereits durch Hermes abgedeckt, siehe
   `docs/hermes/SKILLS.md`, `docs/hermes/MCP.md`)
-- Multi-User-Ausbau, Persona-Layer
+- Caddy/HTTPS/Reverse-Proxy für OpenWebUI, Multi-User-Ausbau,
+  Persona-Layer
 
 Diese Liste ist eine Absichtserklärung, kein Zeitplan.

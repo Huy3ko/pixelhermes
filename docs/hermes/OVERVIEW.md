@@ -40,6 +40,7 @@ Quelle: [github.com/NousResearch/hermes-agent](https://github.com/NousResearch/h
 | Companion Stack (Sprint 7) | [HONCHO.md](HONCHO.md), [COMPANION_STACK.md](COMPANION_STACK.md) | Selbstgehosteter Honcho-Memory-Server + lokaler Embedding-Server (llama.cpp), real installiert, konfiguriert und Ende-zu-Ende verifiziert (Cross-Session-Recall bestätigt) |
 | Drittanbieter-Erweiterungen (Sprint 7) | [SUPER_HERMES.md](SUPER_HERMES.md) | Erste geprüfte, bewusst zugelassene Drittanbieter-Erweiterung (Skill-Paket), inkl. Entfernbarkeits-Nachweis |
 | Self-Evolution (Sprint 7) | [SELF_EVOLUTION.md](SELF_EVOLUTION.md) | Offizielles NousResearch-Tool installiert und konfiguriert, per Quellcode-Analyse als kostenlos bestätigter Dry-Run durchgeführt — kein echter (kostenpflichtiger) Optimierungslauf |
+| OpenWebUI (Phase 8.1) | [OPENWEBUI.md](OPENWEBUI.md) | Unverändertes, offizielles OpenWebUI real über Hermes' OpenAI-kompatiblen API-Server verbunden — Prämisse einer separaten "Agent API" widerlegt und dokumentiert (ADR 0006) |
 
 ## Architektur in einem Satz
 

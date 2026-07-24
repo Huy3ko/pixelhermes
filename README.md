@@ -7,24 +7,30 @@ später die Infrastructure-as-Code-Definitionen.
 
 ## Status
 
-**Sprint 7: Companion Foundation** — Repository-Fundament (Sprint 1),
-Hermes-Architektur-Recherche (Sprint 2, siehe [docs/hermes/](docs/hermes/)),
-reale Linux-Runtime (Sprint 3), ein nativ installierter Hermes-Agent
-für `hermes_hugo` (Sprint 4), produktiv konfiguriert mit Grok als LLM
-und Exa als Suche (Sprint 6), und ein selbstgehosteter Companion-Stack
-aus Honcho (externer Memory-Provider) und einem lokalen
-Embedding-Server (llama.cpp) sind vorhanden — siehe
-[docs/hermes/COMPANION_STACK.md](docs/hermes/COMPANION_STACK.md).
+**Phase 8.1: OpenWebUI ↔ Hermes Agent API** — Repository-Fundament
+(Sprint 1), Hermes-Architektur-Recherche (Sprint 2, siehe
+[docs/hermes/](docs/hermes/)), reale Linux-Runtime (Sprint 3), ein
+nativ installierter Hermes-Agent für `hermes_hugo` (Sprint 4),
+produktiv konfiguriert mit Grok als LLM und Exa als Suche (Sprint 6),
+ein selbstgehosteter Companion-Stack aus Honcho (externer
+Memory-Provider) und einem lokalen Embedding-Server (Sprint 7), und
+seit Phase 8.1 ein unverändertes, offizielles OpenWebUI über Hermes'
+eigenen OpenAI-kompatiblen API-Server verbunden — siehe
+[docs/hermes/OPENWEBUI.md](docs/hermes/OPENWEBUI.md).
 
-Ausdrücklich **weiterhin nicht** installiert:
+Ausdrücklich **weiterhin nicht** eingerichtet:
 
-- OpenWebUI, mem0
+- mem0
 - Humalike (geprüft, bewusst abgelehnt — kostenpflichtiger externer
   Cloud-Dienst, widerspricht "Self Hosted")
 - Weitere Cloud-LLM-/Such-/Embedding-Provider (kein OpenRouter, kein
   Ollama, kein OpenAI, kein Google Gemini)
 - Zusätzliche (Nicht-Hermes-eigene) Skills, konfigurierte MCP-Server
 - Personas, eigene Hermes-Workspace-Konfiguration
+- Caddy, HTTPS, DuckDNS, Reverse-Proxy, Mehrbenutzerbetrieb in
+  OpenWebUI
+- Feature-Tests durch OpenWebUI (Uploads, Tools, Memory, Workspace,
+  Sessions, Skills, Curator) — nächste Phase
 - Hermes-Installation für `hermes_christiane` (Konto existiert bereits;
   Honcho/Embedding-Server sind bereits für spätere Mitnutzung ausgelegt)
 

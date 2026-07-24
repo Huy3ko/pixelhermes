@@ -19,9 +19,12 @@ nicht ausgeführt.) Seit Sprint 7 läuft zusätzlich ein selbstgehosteter
 Companion-Stack aus Honcho (externer Memory-Provider) und einem
 lokalen Embedding-Server (llama.cpp) — die ersten echten
 systemd-Services des Projekts, siehe
-[Companion Stack](#companion-stack-sprint-7) unten. Es ist weiterhin
-kein OpenWebUI, mem0 oder Humalike installiert (Humalike wurde in
-Sprint 7 geprüft und bewusst abgelehnt — siehe unten).
+[Companion Stack](#companion-stack-sprint-7) unten. Seit Phase 8.1 ist
+zusätzlich ein unverändertes, offizielles OpenWebUI über Hermes'
+OpenAI-kompatiblen API-Server verbunden — siehe
+[OpenWebUI](#openwebui-phase-81) unten. Es ist weiterhin kein mem0
+oder Humalike installiert (Humalike wurde in Sprint 7 geprüft und
+bewusst abgelehnt — siehe unten).
 
 ## Architekturprinzipien
 
@@ -290,6 +293,41 @@ dieser kostenlose Modus wurde ausgeführt, kein echter, kostenpflichtiger
 Optimierungslauf. Details:
 [docs/hermes/SELF_EVOLUTION.md](docs/hermes/SELF_EVOLUTION.md).
 
+## OpenWebUI (Phase 8.1)
+
+Unverändertes, offiziell per `pip` installiertes OpenWebUI
+(`companion-openwebui.service`, eigener Systembenutzer `openwebui`
+unter `/opt/companion/`) verbindet sich mit `hermes_hugo`s Hermes über
+dessen offiziellen OpenAI-kompatiblen API-Server
+(`API_SERVER_ENABLED=true`, `/v1/chat/completions`,
+`127.0.0.1:8642`). Die ursprüngliche Annahme einer separaten "Hermes
+Agent API" wurde per Quellcode-Prüfung widerlegt — der OpenAI-förmige
+Endpoint instanziiert dieselbe `AIAgent`-Klasse wie CLI und
+Gateway-Plattformen, ist also bereits der volle Agent. Details:
+[ADR 0006](ADR/0006-openwebui-via-hermes-openai-endpoint.md),
+[docs/hermes/OPENWEBUI.md](docs/hermes/OPENWEBUI.md).
+
+Damit läuft Hermes' Gateway erstmals dauerhaft (offiziell über `hermes
+gateway install`, `systemd --user` + `loginctl enable-linger`) statt
+nur testweise gestartet und gestoppt zu werden (bisheriges Muster aus
+Sprint 4/6) — notwendig, damit die OpenWebUI-Verbindung tatsächlich
+nutzbar bleibt.
+
+**Real Ende-zu-Ende verifiziert:** direkter Hermes-Aufruf und
+OpenWebUI-vermittelter Aufruf liefern nahezu identische
+Prompt-Token-Zahlen (18.334 vs. 18.338) und erscheinen beide mit
+`platform=api_server` in Hermes' eigenem `agent.log` — derselbe echte
+Agent, kein Mock. Genau ein Benutzer (Hugo, per Env-Var-Headless-Setup
+angelegt) — OpenWebUI deaktiviert Signup automatisch nach dem ersten
+Nutzer. Kein Caddy, keine HTTPS, kein Reverse-Proxy, kein DuckDNS —
+OpenWebUI bindet an `127.0.0.1`, Zugriff aktuell nur lokal/loopback.
+
+**Bewusst noch nicht getestet** (nächste Phase): Datei-Uploads, Tools,
+Memory (Honcho), Workspace, Sessions, Super-Hermes-Skills, Curator
+über OpenWebUI — die Architektur bestätigt, dass all das über dieselbe
+`AIAgent`-Instanz erreichbar ist, aber real durchgetestet wird es erst
+in der nächsten Phase.
+
 ## Workspace
 
 Wird nicht im Repository nachgebaut. Hermes bringt seine eigene
@@ -299,15 +337,19 @@ seit Sprint 4 real beobachteten Verzeichnisstruktur unter
 `/srv/companion/hermes_hugo/.hermes/`. Es wurde bewusst **nicht**
 verändert, erweitert oder um eigene Ordner ergänzt — nur beobachtet.
 
-## Ausdrücklich nicht Teil von Sprint 1–7
+## Ausdrücklich nicht Teil von Sprint 1–7 / Phase 8.1
 
-- Hermes Workspace-Anpassungen, OpenWebUI, mem0, Humalike (geprüft und
+- Hermes Workspace-Anpassungen, mem0, Humalike (geprüft und
   abgelehnt, siehe oben)
 - Zusätzliche (Nicht-Hermes-eigene) Skills, konfigurierte MCP-Server
 - Weitere LLM-/Such-/Cloud-Embedding-Provider neben Grok/Exa (kein
   OpenRouter, kein Ollama, kein OpenAI, kein Google Gemini)
 - Personas, eigene Hermes-Workspace-Konfiguration
 - Alles für `hermes_christiane` außer Konto und leerem Home-Verzeichnis
+- Caddy, HTTPS, DuckDNS, Reverse-Proxy, Mehrbenutzerbetrieb in
+  OpenWebUI
+- Feature-Tests durch OpenWebUI hindurch (Uploads, Tools, Memory,
+  Workspace, Sessions, Skills, Curator) — nächste Phase
   (Honcho und der Embedding-Server sind bereits für spätere
   Mitnutzung durch `hermes_christiane` ausgelegt, siehe
   [docs/hermes/COMPANION_STACK.md](docs/hermes/COMPANION_STACK.md))

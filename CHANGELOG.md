@@ -3,6 +3,50 @@
 Format angelehnt an [Keep a Changelog](https://keepachangelog.com/).
 Commits folgen [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [Phase 8.1] - 2026-07-25 - OpenWebUI ↔ Hermes Agent API
+
+### Added
+
+- Hermes API-Server aktiviert für `hermes_hugo` (`API_SERVER_ENABLED`,
+  `API_SERVER_KEY` — echte Env-Vars, direkt in `.env` geschrieben, kein
+  `config.yaml`-Schlüssel, gleicher Fehlerort wie `HONCHO_BASE_URL` in
+  Sprint 7)
+- Hermes-Gateway erstmals dauerhaft betrieben, offiziell über `hermes
+  gateway install` (`systemd --user` + `loginctl enable-linger`), nicht
+  nur testweise gestartet und gestoppt
+- OpenWebUI unverändert per offiziellem `pip install open-webui`
+  installiert (dedizierter Systembenutzer `openwebui`,
+  `/opt/companion/openwebui/`, Python 3.11 via `uv venv` — 3.13 wird
+  von OpenWebUI nicht unterstützt), als systemd-Service, gebunden an
+  `127.0.0.1:8080`
+- Einziger Benutzer (Hugo) per offiziellem Headless-Env-Var-Pfad
+  angelegt; Signup danach automatisch deaktiviert (OpenWebUI-eigenes
+  Verhalten)
+- OpenWebUI über den generischen "OpenAI"-Verbindungstyp mit Hermes'
+  `/v1/chat/completions` verbunden — offiziell dokumentierter
+  OpenWebUI-Hermes-Integrationsweg, keine Kompatibilitätsschicht
+- Ende-zu-Ende real verifiziert: identischer Agent-Pfad für direkten
+  Hermes-Zugriff und OpenWebUI-vermittelten Zugriff (Prompt-Token-
+  Parität, `platform=api_server` in Hermes' `agent.log`)
+- `docs/hermes/OPENWEBUI.md` neu; `ADR 0006` (OpenWebUI über Hermes'
+  OpenAI-Endpoint statt einer nicht existierenden separaten "Agent
+  API"); Top-Level-Docs aktualisiert
+
+### Corrected premise (research before implementation)
+
+- Die ursprüngliche Annahme einer von der generischen OpenAI-API
+  getrennten "Hermes Agent API" wurde per Quellcode-Prüfung widerlegt:
+  `/v1/chat/completions` instanziiert dieselbe `AIAgent`-Klasse wie
+  CLI und Gateway-Plattformen — es gibt nur eine API. Vergleich mit
+  OpenClaws äquivalentem Design bestätigte dasselbe Muster dort.
+
+### Not included (bewusst, laut Vorgabe)
+
+- Caddy, HTTPS, DuckDNS, Reverse-Proxy
+- Mehrbenutzerbetrieb in OpenWebUI (nur Hugo)
+- Feature-Tests durch OpenWebUI (Uploads, Tools, Memory, Workspace,
+  Sessions, Skills, Curator) — nächste Phase
+
 ## [Sprint 7] - 2026-07-24 - Companion Foundation
 
 Erste Erweiterung über reines Hermes hinaus: ein selbstgehosteter
