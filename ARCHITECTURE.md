@@ -9,9 +9,14 @@ zwei Benutzer) — siehe [Systemstruktur](#systemstruktur) unten und
 [INSTALL.md](INSTALL.md) für die genauen Schritte. Seit Sprint 4 läuft
 für den Benutzer `hermes_hugo` eine native, unveränderte Hermes-Agent-
 Installation (CLI, API Server, Gateway, Default-Profil) — siehe
-[Hermes-Installation](#hermes-installation-sprint-4) unten. Es ist
-weiterhin kein systemd-Service aktiv, es ist weiterhin kein OpenWebUI,
-mem0 oder Humalike installiert.
+[Hermes-Installation](#hermes-installation-sprint-4) unten. Seit
+Sprint 6 ist diese Installation mit genau zwei Providern produktiv
+konfiguriert — Grok (xAI) als einziges LLM, Exa als einzige Suche —
+siehe [Produktivbetrieb](#produktivbetrieb-sprint-6) unten. (Sprint 5,
+ein geplantes internes Hermes-Audit, wurde vom Nutzer zugunsten des
+Produktivbetriebs übersprungen — der geschriebene Plan wurde verworfen,
+nicht ausgeführt.) Es ist weiterhin kein systemd-Service aktiv, es ist
+weiterhin kein OpenWebUI, mem0 oder Humalike installiert.
 
 ## Architekturprinzipien
 
@@ -174,6 +179,39 @@ Phase — siehe [ROADMAP.md](ROADMAP.md)); alle Test-Prozesse (API Server,
 Gateway) wurden nach der Verifikation wieder sauber gestoppt, es läuft
 aktuell nichts dauerhaft.
 
+## Produktivbetrieb (Sprint 6)
+
+Minimalistische Produktivarchitektur für `hermes_hugo`, ausschließlich
+über `hermes config set` konfiguriert (kein manuelles Editieren von
+`.env`/`config.yaml`, kein Hermes-Fork):
+
+- **LLM:** Grok (xAI), direkte API (`provider: xai`, `XAI_API_KEY`),
+  Modell `grok-build-0.1` — einziger konfigurierter LLM-Provider.
+- **Suche:** Exa (`EXA_API_KEY`, `web.backend`/`web.search_backend`/
+  `web.extract_backend: exa`) — einziger konfigurierte Suchanbieter.
+- **Workspace/Memory/Skills/Sessions:** ausschließlich nativ, keine
+  PixelHermes-Erweiterung.
+
+Vollständige, quellenbelegte Beobachtungen (inkl. eines kritischen,
+ungelösten Fundes zur Exa-Integration) in
+[docs/hermes/PRODUCTIVE_RUNTIME.md](docs/hermes/PRODUCTIVE_RUNTIME.md),
+Bewertung in [docs/hermes/ASSESSMENT.md](docs/hermes/ASSESSMENT.md).
+
+**Kurzfassung der Verifikation:**
+
+| Bereich | Ergebnis |
+|---|---|
+| Grok — Chat/Coding/Tool-Calls | funktioniert, real geprüft und im Log bestätigt |
+| Exa — Web-Suche | **konfiguriert, aber nicht zuverlässig aufgerufen** — Modell erfindet stattdessen plausible Fake-Ergebnisse (dreifach reproduziert, per `agent.log` `tool_turns=0` widerlegt) |
+| Workspace-Aufgaben (Git/Markdown/Planung) | funktionieren, real ausgeführt (u. a. echtes Git-Repo mit Commits in `~/hermes-notes/`) |
+| Sessions (List/Search/Export/Archive/Optimize/Repair) | größtenteils funktionierend; `archive --older-than` zeigte einen realen, ungeklärten Nichttreffer-Befund; ein realer, unbehandelter Absturz bei Aufruf aus einem für `hermes_hugo` unlesbaren Arbeitsverzeichnis |
+| Curator | nur beobachtet, nicht ausgelöst — 0 Läufe, Trigger-Bedingungen (7 Tage/2h Leerlauf) in dieser Sitzung nicht erfüllbar |
+
+**Bewusst offen gelassen:** die Ursache der Exa-Nichtnutzung wurde
+nicht im Hermes-Quellcode weiterverfolgt (würde "Upstream First"
+verletzen, wenn daraus ein eigener Patch entstünde) — stattdessen
+dokumentiert und als offene Frage markiert.
+
 ## Workspace
 
 Wird nicht im Repository nachgebaut. Hermes bringt seine eigene
@@ -183,10 +221,12 @@ seit Sprint 4 real beobachteten Verzeichnisstruktur unter
 `/srv/companion/hermes_hugo/.hermes/`. Es wurde bewusst **nicht**
 verändert, erweitert oder um eigene Ordner ergänzt — nur beobachtet.
 
-## Ausdrücklich nicht Teil von Sprint 1–4
+## Ausdrücklich nicht Teil von Sprint 1–6
 
 - Hermes Workspace-Anpassungen, OpenWebUI, mem0, Humalike
 - Zusätzliche (Nicht-Hermes-eigene) Skills, konfigurierte MCP-Server
+- Weitere LLM-/Such-Provider neben Grok/Exa (kein OpenRouter, kein
+  Ollama)
 - systemd-Services (laufend oder aktiviert)
-- Modell-/Provider-Credentials, Personas, Memory-Konfiguration
+- Personas, eigene Memory-/Workspace-Konfiguration
 - Alles für `hermes_christiane` außer Konto und leerem Home-Verzeichnis

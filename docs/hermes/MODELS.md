@@ -50,6 +50,19 @@ Als vollwertiger Provider dokumentiert, zwei Auth-Modi:
 Modelle laut OAuth-Guide: `grok-build-0.1` (Default),
 `grok-4.20-0309-reasoning`, `grok-imagine-image`, `grok-imagine-video`.
 
+### Real produktiv konfiguriert — hermes_hugo (Phase 6, 2026-07-24)
+
+`provider: xai` (direkte API, kein OAuth) mit `XAI_API_KEY`,
+`model.default: grok-build-0.1` — funktioniert für Chat, Coding und
+Tool-Calling (terminal/file), siehe
+[PRODUCTIVE_RUNTIME.md](PRODUCTIVE_RUNTIME.md). **Wichtiger, ungelöster
+Fund:** Web-Suche über das `web_search`-Tool (Exa-Backend) wird vom
+Modell in mehreren Tests nicht real aufgerufen — es generiert
+stattdessen überzeugend aussehende, aber erfundene "Tool-Ergebnisse"
+als Text. Vor jeder produktiven Nutzung von Websuche-Antworten dieses
+Setups: Details und Belege in
+[PRODUCTIVE_RUNTIME.md](PRODUCTIVE_RUNTIME.md#aufgabe-2--exa) prüfen.
+
 ## OpenRouter
 
 Vollwertiger, benannter Provider. Setup via `OPENROUTER_API_KEY` in

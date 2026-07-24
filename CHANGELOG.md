@@ -3,6 +3,52 @@
 Format angelehnt an [Keep a Changelog](https://keepachangelog.com/).
 Commits folgen [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [Sprint 6] - 2026-07-24 - Productive Runtime
+
+Sprint 5 (geplantes internes Hermes-Audit) wurde übersprungen — Plan
+verworfen, nicht ausgeführt, keine Artefakte.
+
+### Added
+
+- Grok (xAI) als einziges LLM konfiguriert für `hermes_hugo`
+  (`XAI_API_KEY`, `provider: xai`, `grok-build-0.1`) — real verifiziert:
+  Chat, Coding, Tool-Calling, alles per `agent.log` bestätigt
+- Exa als einzige Suchmaschine konfiguriert (`EXA_API_KEY`,
+  `web.backend`/`web.search_backend`/`web.extract_backend: exa`)
+- Reale Workspace-Aufgaben in `~/hermes-notes/`: Git-Repo mit README
+  und Commits, ein Rollout-Planungsdokument für `hermes_christiane`,
+  eine werkzeugfreie Reasoning-Aufgabe
+- Session-Verwaltung real getestet (list/export/optimize-storage/repair
+  funktionierend; `session_search` bestätigt korrekt)
+- Curator-Status/-Konfiguration beobachtet (nichts ausgelöst/verändert)
+- `docs/hermes/PRODUCTIVE_RUNTIME.md`, `docs/hermes/ASSESSMENT.md` neu
+  angelegt; `docs/hermes/MODELS.md`, `docs/hermes/OVERVIEW.md`
+  aktualisiert; `ARCHITECTURE.md`, `INSTALL.md`, `ROADMAP.md`
+  aktualisiert
+
+### Found (real, unresolved — dokumentiert statt "gefixt")
+
+- **Exa/`web_search` wird vom Modell nicht real aufgerufen** trotz
+  korrekter Konfiguration — es erzeugt stattdessen plausible, aber
+  erfundene "Tool-Ergebnisse". Dreifach reproduziert (zwei Modelle),
+  per `agent.log` (`tool_turns=0`) zweifelsfrei belegt; kein
+  Hermes-eigenes Beispiel im Quellcode als Ursache gefunden
+- `hermes sessions archive --older-than` traf in mehreren Tests nie,
+  obwohl sichtlich ältere Sessions vorhanden waren
+- Realer, unbehandelter Absturz (`PermissionError` auf `.git`-Suche),
+  wenn Hermes aus einem für den Zielbenutzer unlesbaren
+  Arbeitsverzeichnis aufgerufen wird
+- Drei unterschiedliche, nicht in Einklang zu bringende Skill-Zählungen
+  (69 Installer-Log, 65 `skills list`, 68 `curator status`) auf
+  derselben unveränderten Installation
+
+### Not included (bewusst)
+
+- OpenWebUI, OpenRouter, Ollama, mem0, Humalike
+- Zusätzliche Skills, konfigurierte MCP-Server, systemd-Services
+- Personas, eigene Memory-/Workspace-Konfiguration, eigene Datenbanken
+- Hermes-Installation für `hermes_christiane`
+
 ## [Sprint 4] - 2026-07-24 - Native Hermes Installation
 
 Erste installierte Anwendung im Projekt — ausschließlich für den

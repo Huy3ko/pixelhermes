@@ -218,7 +218,79 @@ Ein funktionierender, unveränderter Hermes-Agent für `hermes_hugo`
 zusätzlicher Skill, kein MCP-Server, kein systemd-Service, kein
 Workspace-Umbau. `hermes_christiane` weiterhin nur Konto + leeres Home.
 
+## Sprint 6 — Productive Runtime
+
+Erste produktive Provider-Konfiguration, ausschließlich für
+`hermes_hugo`. Genau zwei Provider: Grok (xAI) als einziges LLM, Exa
+als einzige Suche. Kein OpenRouter, kein Ollama, kein OpenWebUI, kein
+mem0, kein Humalike, keine zusätzlichen Skills, kein MCP-Server, kein
+systemd, keine weiteren Benutzer. (Sprint 5 — ein geplantes internes
+Hermes-Audit — wurde übersprungen; der geschriebene Plan wurde
+verworfen, nicht ausgeführt.)
+
+### Grok konfigurieren
+
+```bash
+sudo -u hermes_hugo -H bash -lc 'hermes config set XAI_API_KEY "<key>"'
+sudo -u hermes_hugo -H bash -lc 'hermes config set model.provider xai'
+sudo -u hermes_hugo -H bash -lc 'hermes config set model.default grok-build-0.1'
+```
+
+Verifiziert: Chat, Tool-Calling (terminal), Coding (Datei schreiben,
+ausführen, auf echten Fehler reagieren) — alle real getestet und im
+`agent.log` bestätigt.
+
+### Exa konfigurieren
+
+```bash
+sudo -u hermes_hugo -H bash -lc 'hermes config set EXA_API_KEY "<key>"'
+sudo -u hermes_hugo -H bash -lc 'hermes config set web.backend exa'
+sudo -u hermes_hugo -H bash -lc 'hermes config set web.search_backend exa'
+sudo -u hermes_hugo -H bash -lc 'hermes config set web.extract_backend exa'
+```
+
+**Kritischer, ungelöster Fund:** trotz korrekter Konfiguration (Key
+gesetzt, `web`-Toolset laut `hermes doctor` verfügbar) ruft das Modell
+das `web_search`-Tool in drei unabhängigen, expliziten Tests nicht real
+auf — es erzeugt stattdessen plausibel aussehende, aber erfundene
+"Tool-Ergebnisse". Belegt über `~/.hermes/logs/agent.log`
+(`tool_turns=0` bei jedem Versuch). Nicht als Hermes-eigenes
+Beispiel im Quellcode gefunden (gezielt gegrept). Ursache nicht
+identifiziert — nicht weiterverfolgt, um Hermes nicht zu verändern.
+Volle Beweisführung:
+[docs/hermes/PRODUCTIVE_RUNTIME.md](docs/hermes/PRODUCTIVE_RUNTIME.md).
+
+### Reale Arbeitsaufgaben (nicht künstlich)
+
+In `~/hermes-notes/`: echtes `git init` + `README.md` + Commit (8
+Tool-Calls); ein Planungsdokument `ROLLOUT_NOTES.md` für den
+`hermes_christiane`-Rollout (107 Tool-Calls über 4 Minuten — der Agent
+untersuchte dabei selbstständig das System, u. a. einen echten,
+gescheiterten Versuch, auf `hermes_christiane` zuzugreifen); eine
+werkzeugfreie Reasoning-Aufgabe zu systemd user- vs. system-Services.
+
+### Sessions, Curator
+
+`hermes sessions list/export/optimize-storage/repair` funktionierten
+korrekt; `session_search` fand eine frühere Session korrekt wieder;
+`sessions archive --older-than` traf in mehreren Tests nie, obwohl
+sichtlich ältere Sessions vorhanden waren — realer, ungeklärter Befund.
+Ein realer, unbehandelter Absturz trat auf, als ein Befehl aus einem
+für `hermes_hugo` unlesbaren Arbeitsverzeichnis lief (Git-Kontext-
+Erkennung fängt Permission-Fehler nicht ab). Curator: nur beobachtet
+(`hermes curator status`), nichts ausgelöst — 0 Läufe, Trigger-
+Bedingungen (7 Tage/2h Leerlauf) in dieser Sitzung nicht erfüllbar.
+
+### Ergebnis
+
+Produktive Grok+Exa-Konfiguration für `hermes_hugo`, größtenteils
+funktionierend — mit einem zentralen, offenen Problem (Exa-Suche wird
+nicht zuverlässig genutzt) und mehreren kleineren realen Funden.
+Vollständige Bewertung: [docs/hermes/ASSESSMENT.md](docs/hermes/ASSESSMENT.md).
+
 ## Nächste Schritte
 
-Modell-/Provider-Entscheidung (ADR) für `hermes_hugo`, danach ggf.
-`hermes_christiane` nach demselben Muster. Siehe [ROADMAP.md](ROADMAP.md).
+Ursache der Exa/`web_search`-Nichtnutzung klären (ggf. Upstream-Issue).
+Erst danach: `hermes_christiane` nach demselben Muster, oder weitere
+Erweiterungen gemäß [ASSESSMENT.md](docs/hermes/ASSESSMENT.md). Siehe
+[ROADMAP.md](ROADMAP.md).

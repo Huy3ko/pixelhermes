@@ -102,11 +102,62 @@ Ausdrücklich nicht Teil dieses Sprints: Modell-/Provider-Konfiguration,
 Personas, Memory-Engine (mem0/Humalike), zusätzliche Skills, MCP-Server,
 systemd, Hermes-Installation für `hermes_christiane`.
 
-## Sprint 5+ — geplant (noch nicht begonnen)
+## Sprint 5 — Hermes Internal Audit (übersprungen)
+
+Ein umfassendes, rein lesendes internes Hermes-Audit (Runtime, Workspace,
+SQLite, Sessions, Skills, MCP, Provider-Layer, Datenfluss,
+Architekturbewertung) wurde als Plan ausgearbeitet, aber vom Nutzer
+zugunsten von Sprint 6 (Produktivbetrieb) verworfen — der Plan wurde
+nie ausgeführt. Kein Code, keine Doku aus diesem Sprint entstanden.
+
+## Sprint 6 — Productive Runtime (abgeschlossen)
+
+Ziel: Hermes erstmals produktiv betreiben, ausschließlich für
+`hermes_hugo`. Minimalistische Architektur: Grok (xAI) als einziges
+LLM, Exa als einzige Suche, ansonsten ausschließlich native
+Hermes-Mechanismen (Workspace, Memory, Curator, Session Search, Skills).
+Kein OpenWebUI, kein OpenRouter, kein Ollama, kein mem0, kein Humalike,
+keine zusätzlichen Skills, keine weiteren Benutzer, keine eigene
+Personas-/Workspace-Struktur, keine eigenen Datenbanken.
+
+- [x] Grok konfiguriert (`XAI_API_KEY`, `provider: xai`,
+      `grok-build-0.1`) und real verifiziert: Chat, Coding, Tool-Calls
+      (terminal/file) — alle über `agent.log` bestätigt
+- [x] Exa konfiguriert (`EXA_API_KEY`, `web.backend`/`web.search_backend`/
+      `web.extract_backend: exa`) — **kritischer, ungelöster Fund:**
+      `web_search` wird vom Modell trotz korrekter Konfiguration nicht
+      real aufgerufen (dreifach reproduziert, per Log widerlegt, kein
+      Hermes-eigenes Beispiel als Ursache gefunden)
+- [x] Reale Workspace-Aufgaben durchgeführt (Git-Repo + Commits,
+      Planungsdokument, werkzeugfreie Reasoning-Aufgabe) — keine
+      künstlichen Tests
+- [x] Sessions dokumentiert: List/Search/Export/Optimize/Repair
+      funktionieren; `archive --older-than` zeigte einen realen
+      Nichttreffer-Befund; ein realer, unbehandelter Absturz bei
+      Aufruf aus unlesbarem Arbeitsverzeichnis entdeckt
+- [x] Curator nur beobachtet (Status, Konfiguration) — nichts
+      ausgelöst oder verändert
+- [x] Bewertung geschrieben (was ist gelöst / erweiterbar / besser
+      unangetastet / Erweiterungspunkt / klare Upstream-Grenze) —
+      mit offen benannter Einschränkung: basiert auf einer intensiven
+      Sitzung, nicht auf mehrtägiger Nutzung wie ursprünglich verlangt
+- [x] `docs/hermes/PRODUCTIVE_RUNTIME.md`, `docs/hermes/ASSESSMENT.md`
+      neu angelegt; `docs/hermes/MODELS.md`, `OVERVIEW.md`,
+      `ARCHITECTURE.md`, `INSTALL.md`, `CHANGELOG.md` aktualisiert
+
+Ausdrücklich nicht Teil dieses Sprints: OpenWebUI, OpenRouter, Ollama,
+mem0, Humalike, zusätzliche Skills, weitere Benutzer, Personas, eigene
+Workspace-Struktur, eigene Datenbanken, systemd.
+
+## Sprint 7+ — geplant (noch nicht begonnen)
 
 Grobe, unverbindliche Reihenfolge — Details folgen jeweils im Sprint:
 
-- Modell-/Provider-Entscheidung (ADR) für `hermes_hugo`
+- Ursache der Exa/`web_search`-Nichtnutzung klären (ggf. Upstream-Issue
+  bei Nous Research melden) — vor jeder Aussage "Suche funktioniert
+  produktiv"
+- Mehrtägige tatsächliche Nutzung, um Sprint 6's Bewertung zu
+  vervollständigen (inkl. eines echten Curator-Laufs)
 - Hermes-Installation für `hermes_christiane` nach demselben Muster
 - OpenWebUI
 - mem0-Alternative (falls über Hermes' eingebaute Provider-Plugins
@@ -115,6 +166,6 @@ Grobe, unverbindliche Reihenfolge — Details folgen jeweils im Sprint:
 - Produktive Skills-/MCP-Nutzung (bereits durch Hermes abgedeckt, siehe
   `docs/hermes/SKILLS.md`, `docs/hermes/MCP.md`)
 - systemd-Services (`hermes gateway install`), sobald ein Profil/Nutzer
-  produktiv laufen soll
+  dauerhaft laufen soll
 
 Diese Liste ist eine Absichtserklärung, kein Zeitplan.

@@ -36,6 +36,7 @@ Quelle: [github.com/NousResearch/hermes-agent](https://github.com/NousResearch/h
 | Deployment | [DEPLOYMENT.md](DEPLOYMENT.md) | Linux, systemd, Reverse Proxy, Mehrbenutzerbetrieb, Logging, Backup |
 | Modelle | [MODELS.md](MODELS.md) | OpenAI-kompatible Provider, Grok, OpenRouter, lokale Modelle |
 | Synthese | [BEST_PRACTICES.md](BEST_PRACTICES.md), [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) | Kapitelübergreifende Empfehlungen und offene Fragen |
+| Produktivbetrieb (Phase 6) | [PRODUCTIVE_RUNTIME.md](PRODUCTIVE_RUNTIME.md), [ASSESSMENT.md](ASSESSMENT.md) | Grok+Exa produktiv konfiguriert und real verifiziert, inkl. eines kritischen, ungelösten Fundes (Exa/`web_search` wird nicht zuverlässig aufgerufen) |
 
 ## Architektur in einem Satz
 
