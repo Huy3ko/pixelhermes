@@ -41,6 +41,7 @@ Quelle: [github.com/NousResearch/hermes-agent](https://github.com/NousResearch/h
 | Drittanbieter-Erweiterungen (Sprint 7) | [SUPER_HERMES.md](SUPER_HERMES.md) | Erste geprüfte, bewusst zugelassene Drittanbieter-Erweiterung (Skill-Paket), inkl. Entfernbarkeits-Nachweis |
 | Self-Evolution (Sprint 7) | [SELF_EVOLUTION.md](SELF_EVOLUTION.md) | Offizielles NousResearch-Tool installiert und konfiguriert, per Quellcode-Analyse als kostenlos bestätigter Dry-Run durchgeführt — kein echter (kostenpflichtiger) Optimierungslauf |
 | OpenWebUI (Phase 8.1) | [OPENWEBUI.md](OPENWEBUI.md) | Unverändertes, offizielles OpenWebUI real über Hermes' OpenAI-kompatiblen API-Server verbunden — Prämisse einer separaten "Agent API" widerlegt und dokumentiert (ADR 0006) |
+| Tracing/Observability | [TRACING.md](TRACING.md) | Eigenes, rein additives Hook-Plugin (kein Docker, kein Langfuse-Self-Host) misst Request-/Session-/Tool-/LLM-Zeiten real — inkl. ehrlicher Grenzen (kein TTFT/Streaming/RAG-Hook vorhanden) und einem realen, dabei entdeckten Bottleneck (Honcho-Reasoning) |
 
 ## Architektur in einem Satz
 

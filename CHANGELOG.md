@@ -3,6 +3,37 @@
 Format angelehnt an [Keep a Changelog](https://keepachangelog.com/).
 Commits folgen [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [Tracing] - 2026-07-25 - Request/Step Observability
+
+Instrumentierung und Messung only — keine Optimierungen, keine
+Prompt-/Provider-/Memory-/Config-Änderungen.
+
+### Added
+
+- Rein additives Hermes-Plugin `companion-tracing`
+  (`~/.hermes/plugins/companion-tracing/`, keine Hermes-Kerndatei
+  verändert) misst Request-ID, Session-ID, Schrittdauern (Tool-Calls
+  klassifiziert nach Honcho/Exa/Workspace/Skills, LLM-Aufrufe mit
+  Hermes' eigenen exakten `api_duration`/`usage`-Werten) über die
+  offiziellen Plugin-Hooks
+- Geprüft und verworfen: Hermes' gebündeltes Langfuse-Plugin nutzt
+  dieselben Hooks, verlangt aber Docker zum Self-Hosting — Konflikt
+  mit dem projektweiten Docker-Verbot ([ADR 0007](ADR/0007-local-tracing-plugin-not-langfuse.md))
+- JSON-Lines-Traces + lesbare Zusammenfassung unter
+  `~/.hermes/logs/tracing/`
+- Real getestet an drei unterschiedlichen Anfragetypen (Tool-Call,
+  Honcho-lastige Anfrage über 3 LLM-Runden, Super-Hermes-Skill) — dabei
+  einen echten Bug im eigenen Plugin-Code gefunden und vor der
+  Dokumentation behoben (verwaister State-Eintrag durch
+  session_id/turn_id-Key-Mismatch)
+- Realer Fund: ein einzelner `honcho_reasoning`-Aufruf dominierte eine
+  gemessene Anfrage (23,6s von 54,6s Gesamtdauer) stärker als jeder
+  einzelne LLM-Call
+- `docs/hermes/TRACING.md` neu, mit ehrlicher Abgrenzung: TTFT,
+  Streaming-Dauer, RAG, Skill-Selection und Tool-Planning sind ohne
+  Hermes-Kernpatch nicht separat messbar — als solche dokumentiert,
+  nicht vorgetäuscht
+
 ## [Phase 8.1] - 2026-07-25 - OpenWebUI ↔ Hermes Agent API
 
 ### Added

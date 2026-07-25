@@ -209,6 +209,29 @@ Ausdrücklich nicht Teil dieser Phase: Caddy, HTTPS, DuckDNS,
 Reverse-Proxy, Mehrbenutzerbetrieb, Feature-Tests durch OpenWebUI
 (Uploads, Tools, Memory, Workspace, Sessions, Skills, Curator).
 
+## Tracing / Observability (abgeschlossen, keine Phasennummer — Querschnittsthema)
+
+Ziel: kompletten Anfragepfad instrumentieren, Performance-Profil
+erzeugen. Ausdrücklich keine Optimierung — nur messen, dokumentieren.
+
+- [x] Geprüft: Hermes' gebündeltes Langfuse-Plugin nutzt exakt die
+      nötigen Hooks, verlangt aber Docker zum Self-Hosting — Konflikt
+      mit dem projektweiten Docker-Verbot
+- [x] Eigenes, rein additives Plugin gebaut (`companion-tracing`,
+      offizielle Hooks: `on_session_start`, `pre/post_api_request`,
+      `pre/post_tool_call`, `on_session_end`) —
+      [ADR 0007](ADR/0007-local-tracing-plugin-not-langfuse.md)
+- [x] Real getestet (Tool-Call, Honcho-Recall über 3 LLM-Runden,
+      Super-Hermes-Skill) — dabei einen echten Bug im eigenen Code
+      gefunden und behoben (verwaister State-Eintrag durch
+      Key-Mismatch)
+- [x] Realer Fund: `honcho_reasoning` dominierte eine gemessene
+      Anfrage (23,6s von 54,6s) stärker als jeder LLM-Call
+- [x] Ehrliche Grenzen dokumentiert: TTFT, Streaming-Dauer, RAG,
+      Skill-Selection und Tool-Planning sind ohne Hermes-Kernpatch
+      nicht separat messbar — nicht vorgetäuscht
+- [x] `docs/hermes/TRACING.md` neu, Top-Level-Docs aktualisiert
+
 ## Phase 8.2+ / Sprint 8+ — geplant (noch nicht begonnen)
 
 Grobe, unverbindliche Reihenfolge — Details folgen jeweils im Sprint:

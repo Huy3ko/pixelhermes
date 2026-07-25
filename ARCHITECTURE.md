@@ -328,6 +328,25 @@ Memory (Honcho), Workspace, Sessions, Super-Hermes-Skills, Curator
 `AIAgent`-Instanz erreichbar ist, aber real durchgetestet wird es erst
 in der nächsten Phase.
 
+## Tracing / Observability
+
+Ein rein additives Hermes-Plugin (`~/.hermes/plugins/companion-tracing/`,
+Systembenutzer `hermes_hugo`, keine Hermes-Kerndatei verändert) misst
+Request-/Session-/Tool-/LLM-Zeiten über Hermes' offizielle
+Plugin-Hooks (`on_session_start`, `pre/post_api_request`,
+`pre/post_tool_call`, `on_session_end`) und schreibt strukturierte
+JSON-Lines-Traces nach `~/.hermes/logs/tracing/`. Hermes' eigenes
+gebündeltes Langfuse-Plugin nutzt dieselben Hooks, verlangt für
+Self-Hosting aber offiziell Docker — deshalb ein eigenes,
+Docker-freies, vollständig lokales Plugin statt dessen
+([ADR 0007](ADR/0007-local-tracing-plugin-not-langfuse.md)). Keine
+Optimierung, keine Prompt-/Provider-/Memory-Änderung — ausschließlich
+Messung. Volle Beweisführung inkl. ehrlicher Grenzen (kein TTFT/
+Streaming/RAG messbar, da kein Hook dafür existiert) und einem realen,
+dabei entdeckten Bottleneck (ein einzelner `honcho_reasoning`-Aufruf
+dominierte eine gemessene Anfrage stärker als jeder LLM-Call):
+[docs/hermes/TRACING.md](docs/hermes/TRACING.md).
+
 ## Workspace
 
 Wird nicht im Repository nachgebaut. Hermes bringt seine eigene
