@@ -385,6 +385,7 @@ verändert, erweitert oder um eigene Ordner ergänzt — nur beobachtet.
   OpenWebUI
 - Feature-Tests durch OpenWebUI hindurch (Uploads, Tools, Memory,
   Workspace, Sessions, Skills, Curator) — nächste Phase
-  (Honcho und der Embedding-Server sind bereits für spätere
-  Mitnutzung durch `hermes_christiane` ausgelegt, siehe
-  [docs/hermes/COMPANION_STACK.md](docs/hermes/COMPANION_STACK.md))
+  (Mnemosyne und der Embedding-Server sind bereits für spätere
+  Mitnutzung durch `hermes_christiane` ausgelegt; Honcho ist seit
+  Phase X vollständig entfernt, siehe
+  [docs/hermes/MNEMOSYNE.md](docs/hermes/MNEMOSYNE.md))

@@ -1,5 +1,13 @@
 # Honcho — Self-Hosted Memory Provider (Sprint 7)
 
+> **Historisch / vollständig entfernt (Phase X).** Dieses Dokument
+> beschreibt den Sprint-7-Zustand als Nachweis der damaligen
+> Installation und Verifikation. Honcho ist seit Phase X komplett
+> deinstalliert (Pakete, Datenbank, systemd-Dienste, Systembenutzer) —
+> aktiver Memory-Provider ist `mnemosyne-hermes`, siehe
+> [MNEMOSYNE.md](MNEMOSYNE.md) und
+> [ADR 0008](../../ADR/0008-mnemosyne-replaces-honcho.md).
+
 Real, self-hosted installation of Honcho (plastic-labs/honcho) as
 Hermes' external memory provider for `hermes_hugo`, plus a local
 embedding server it depends on. Everything below is either a literal

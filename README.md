@@ -7,22 +7,24 @@ später die Infrastructure-as-Code-Definitionen.
 
 ## Status
 
-**Phase X: Mnemosyne ersetzt Honcho** — Repository-Fundament
+**Phase Y: Honcho vollständig entfernt** — Repository-Fundament
 (Sprint 1), Hermes-Architektur-Recherche (Sprint 2, siehe
 [docs/hermes/](docs/hermes/)), reale Linux-Runtime (Sprint 3), ein
 nativ installierter Hermes-Agent für `hermes_hugo` (Sprint 4),
 produktiv konfiguriert mit Grok als LLM und Exa als Suche (Sprint 6),
-ein selbstgehosteter Companion-Stack (Sprint 7), Phase 8.1 ein
-unverändertes, offizielles OpenWebUI über Hermes' eigenen
-OpenAI-kompatiblen API-Server verbunden ([docs/hermes/OPENWEBUI.md](docs/hermes/OPENWEBUI.md)),
-ein eigenes Tracing-Plugin (Phase 8.2-ish, siehe
-[docs/hermes/TRACING.md](docs/hermes/TRACING.md)) und aktuell
+ein selbstgehosteter Companion-Stack (Sprint 7, mittlerweile größtenteils
+historisch — siehe unten), Phase 8.1 ein unverändertes, offizielles
+OpenWebUI über Hermes' eigenen OpenAI-kompatiblen API-Server verbunden
+([docs/hermes/OPENWEBUI.md](docs/hermes/OPENWEBUI.md)), ein eigenes
+Tracing-Plugin (Phase 8.2-ish, siehe
+[docs/hermes/TRACING.md](docs/hermes/TRACING.md)) und seit Phase X
 `mnemosyne-hermes` als aktiver Memory-Provider anstelle von Honcho —
 real getestet (12 Ende-zu-Ende-Tests) und mit gemessenem
-Performance-Vergleich, siehe [docs/hermes/MNEMOSYNE.md](docs/hermes/MNEMOSYNE.md)
-und [ADR 0008](ADR/0008-mnemosyne-replaces-honcho.md). Honcho ist
-deaktiviert (gestoppt, nicht deinstalliert); vollständige Entfernung
-ist eine eigene, nachfolgende Phase.
+Performance-Vergleich. Honcho wurde seit Phase Y **vollständig
+entfernt** (Pakete, Datenbank, systemd-Dienste, Systembenutzer) — nur
+PostgreSQL/Redis-Serverpakete selbst blieben (leer, ohne Honcho-Daten)
+auf Nutzerentscheidung hin installiert. Details: [docs/hermes/MNEMOSYNE.md](docs/hermes/MNEMOSYNE.md)
+und [ADR 0008](ADR/0008-mnemosyne-replaces-honcho.md).
 
 Ausdrücklich **weiterhin nicht** eingerichtet:
 
@@ -39,8 +41,6 @@ Ausdrücklich **weiterhin nicht** eingerichtet:
   Sessions, Skills, Curator) — nächste Phase
 - Hermes-Installation für `hermes_christiane` (Konto existiert bereits;
   Mnemosyne/Embedding-Server sind bereits für spätere Mitnutzung ausgelegt)
-- Vollständige Deinstallation von Honcho (aktuell nur deaktiviert) —
-  eigene, nachfolgende Phase
 
 Details siehe [ROADMAP.md](ROADMAP.md).
 

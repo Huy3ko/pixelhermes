@@ -3,6 +3,42 @@
 Format angelehnt an [Keep a Changelog](https://keepachangelog.com/).
 Commits folgen [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [Phase Y] - 2026-07-25 - Honcho vollständig entfernt
+
+### Removed
+
+- systemd-Units `companion-honcho-api.service`, `companion-honcho-deriver.service`
+- PostgreSQL-Datenbank `honcho` + Rolle `honcho` (`DROP DATABASE`, `DROP ROLE`)
+- Systembenutzer/-gruppe `honcho`, Home-Verzeichnis `/opt/companion/honcho`
+  (~1,2 GB: Git-Checkout, uv-venv, uv-Cache) — vorher als tar-Backup
+  gesichert (Konfiguration/Code, ohne venv/Cache)
+- `~/.hermes/honcho.json`, inaktive `HONCHO_API_KEY`-Template-Zeile in
+  `~/.hermes/.env`
+
+### Kept (bewusst nicht entfernt)
+
+- PostgreSQL- und Redis-Serverpakete selbst (auf Nutzerentscheidung hin
+  installiert gelassen, ohne Honcho-Daten) — nur Honchos Datenbank/
+  Rolle wurde entfernt
+- Hermes' eigenes gebündeltes `plugins/memory/honcho`-Plugin und die
+  `honcho_ai`-Bibliothek in Hermes' venv — Teil der Hermes-Distribution,
+  nicht unsere Installation
+- Mnemosynes eigenes `core/importers/honcho.py` — Teil des
+  Mnemosyne-Pakets
+
+### Verified
+
+- Vollständiges Audit vor jeder Löschung bestätigte exklusive
+  Honcho-Zugehörigkeit jeder entfernten Ressource; Docker war nie
+  installiert, kein Cron-Subsystem vorhanden, keine lokalen
+  TinyLlama/`ctransformers`-Pakete in Honchos venv gefunden
+- Nach der Entfernung: keine Honcho-Prozesse/-Services/-User/-DB/
+  -Config/-Plugins; `hermes memory status` → `mnemosyne`; Mnemosyne,
+  Workspace, OpenWebUI, Tracing, Skills real erneut getestet
+
+Details: [docs/hermes/MNEMOSYNE.md](docs/hermes/MNEMOSYNE.md#honcho-entfernung-phase-y),
+[ADR 0008 Update](ADR/0008-mnemosyne-replaces-honcho.md#update-phase-y-honcho-vollständig-entfernt).
+
 ## [Phase X] - 2026-07-25 - Mnemosyne ersetzt Honcho
 
 ### Added

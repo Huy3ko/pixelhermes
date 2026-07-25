@@ -88,3 +88,25 @@ Dienst — erfüllt "Self Hosted").
 - Honcho-Entfernung (Pakete, Datenbanken, Dienste, Systembenutzer)
   erfolgt als eigene, spätere Phase erst nach dieser vollständigen
   Verifikation.
+
+## Update (Phase Y): Honcho vollständig entfernt
+
+Nach abgeschlossener Verifikation wurde Honcho komplett deinstalliert:
+systemd-Units, PostgreSQL-Datenbank/-Rolle `honcho`, Systembenutzer
+`honcho` (inkl. Home-Verzeichnis, Git-Checkout, venv, uv-Cache, ~1,2 GB),
+sowie `~/.hermes/honcho.json`. Vor jeder Löschung wurde per Audit
+bestätigt, dass die jeweilige Ressource ausschließlich Honcho gehörte
+(keine anderen Postgres-Datenbanken/-Rollen, kein anderer
+Redis-Konsument, keine anderen Prozesse im `honcho`-Systembenutzer).
+
+Bewusste Entscheidung (Nutzer-Vorgabe): PostgreSQL- und
+Redis-**Serverpakete** bleiben installiert, auch wenn sie ursprünglich
+exklusiv für Honcho eingerichtet wurden — nur Honchos Datenbank/Rolle
+wurde entfernt, die Server selbst (leer, ohne Honcho-Daten) bleiben als
+wiederverwendbare Infrastruktur bestehen. Hermes' eigenes gebündeltes
+`plugins/memory/honcho`-Plugin (Teil der Hermes-Distribution) und
+Mnemosynes eigenes `core/importers/honcho.py` wurden nicht angefasst —
+beides ist fremder Code, nicht unsere Installation.
+
+Vollständiger Nachweis, Audit-Tabelle und Nach-Entfernung-Verifikation:
+[docs/hermes/MNEMOSYNE.md](../docs/hermes/MNEMOSYNE.md#honcho-entfernung-phase-y).

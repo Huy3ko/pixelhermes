@@ -266,13 +266,52 @@ offizielle existiert.
 - [x] `docs/hermes/MNEMOSYNE.md` neu, [ADR 0008](ADR/0008-mnemosyne-replaces-honcho.md),
       Top-Level-Docs aktualisiert
 
+## Phase Y — Honcho vollständig entfernt (abgeschlossen)
+
+Ziel: Honcho nach vollständiger Mnemosyne-Verifikation restlos
+deinstallieren. Vor jeder Löschung geprüft, dass die Ressource
+ausschließlich Honcho gehörte.
+
+- [x] Vollständiges Audit vor jeder Löschung (Prozesse, Services, User,
+      Datenbanken, Config, Secrets, Plugins, Docker, Cronjobs, Cache,
+      Logs, PID-Dateien) — Docker war nie installiert, kein Cron-
+      Subsystem vorhanden, keine lokalen TinyLlama/ctransformers-
+      Pakete in Honchos venv gefunden (Honchos Text-Generierung lief
+      nachweislich über Grok/xAI, nie lokal)
+- [x] Backup von Honchos Konfiguration/Code (ohne venv/Cache) vor
+      Löschung erstellt
+- [x] PostgreSQL-Datenbank `honcho` + Rolle `honcho` gelöscht (einzige
+      Nicht-System-DB/-Rolle auf der Instanz) — Server selbst auf
+      Nutzerentscheidung hin installiert gelassen, keine Honcho-Daten
+      mehr enthalten
+- [x] Redis geprüft (leer, keine Persistenz, kein anderer Konsument) —
+      nichts zu löschen, Server unverändert gelassen
+- [x] systemd-Units entfernt, `daemon-reload`
+- [x] Systembenutzer/-gruppe `honcho` gelöscht (inkl. Home-Verzeichnis,
+      ~1,2 GB: Git-Checkout, venv, uv-Cache)
+- [x] `~/.hermes/honcho.json` und die inaktive `HONCHO_API_KEY`-
+      Template-Zeile in `~/.hermes/.env` entfernt — Mnemosyne-Config
+      unangetastet
+- [x] Hermes' eigenes gebündeltes `plugins/memory/honcho`-Plugin und
+      Mnemosynes `core/importers/honcho.py` bewusst nicht angefasst
+      (fremder Code, nicht unsere Installation)
+- [x] Repository-weites Audit nach verbliebenen Referenzen; nur
+      offensichtlich veraltete "aktuell"-Formulierungen korrigiert
+      (`ARCHITECTURE.md`, `HONCHO.md`, `COMPANION_STACK.md`,
+      `OVERVIEW.md`) — historische Sprint-7-Dokumentation bewusst
+      erhalten
+- [x] Nach-Entfernung-Verifikation: keine Honcho-Prozesse/-Services/
+      -User/-DB/-Config/-Plugins/-Docker-Ressourcen/-Python-Pakete;
+      `hermes memory status` → `mnemosyne`; Mnemosyne, Workspace,
+      OpenWebUI, Tracing, Skills real erneut getestet — alle
+      funktionsfähig
+- [x] `docs/hermes/MNEMOSYNE.md` und [ADR 0008](ADR/0008-mnemosyne-replaces-honcho.md)
+      um Entfernungs-Nachweis ergänzt
+
 ## Phase 8.2+ / Sprint 8+ — geplant (noch nicht begonnen)
 
 Grobe, unverbindliche Reihenfolge — Details folgen jeweils im Sprint:
 
-- Vollständige Deinstallation von Honcho (Pakete, DB, Dienste,
-  Systembenutzer, lokale TinyLlama/Reflection/Consolidation-Modelle) —
-  eigene, nachfolgende Phase
 - Feature-Validierung durch OpenWebUI hindurch (Uploads, Tools, Memory/
   Mnemosyne, Workspace, Sessions, Super-Hermes-Skills, Curator) —
   direkte Fortsetzung von Phase 8.1

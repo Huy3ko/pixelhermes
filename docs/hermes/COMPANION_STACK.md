@@ -1,5 +1,13 @@
 # Companion Stack — Architecture Overview (Sprint 7)
 
+> **Historisch (Sprint 7 state).** Honcho, PostgreSQL's `honcho`
+> database/role, and Redis's Honcho-reserved role described below were
+> removed entirely in Phase X. The embedding server (llama.cpp) remains
+> active, now serving Mnemosyne instead. See
+> [MNEMOSYNE.md](MNEMOSYNE.md) and
+> [ADR 0008](../../ADR/0008-mnemosyne-replaces-honcho.md) for the
+> current state.
+
 The full, real, currently-running stack for `hermes_hugo`, as actually
 installed and verified — not a target/aspirational diagram. See
 [PRODUCTIVE_RUNTIME.md](PRODUCTIVE_RUNTIME.md) for the Grok/Exa layer

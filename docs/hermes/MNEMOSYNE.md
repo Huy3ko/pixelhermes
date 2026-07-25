@@ -204,5 +204,43 @@ dokumentierte Recall-Inkonsistenz, die für den produktiven Betrieb
 beobachtet, aber nicht als blockierend eingestuft wird). Der
 Drittanbieter-Status bleibt ein bewusst akzeptiertes Risiko, transparent
 dokumentiert in [ADR 0008](../../ADR/0008-mnemosyne-replaces-honcho.md).
-Honcho ist Stand dieses Dokuments deaktiviert (nicht deinstalliert);
-vollständige Entfernung ist eine eigene, nachfolgende Phase.
+
+## Honcho-Entfernung (Phase Y)
+
+Nach obiger Verifikation vollständig deinstalliert. Vorheriges
+Audit (Phase 1) bestätigte für jede entfernte Ressource, dass sie
+ausschließlich zu Honcho gehörte, bevor gelöscht wurde:
+
+| Ressource | Aktion | Nachweis vor Löschung |
+|---|---|---|
+| `companion-honcho-api.service`, `companion-honcho-deriver.service` | Unit-Dateien entfernt, `daemon-reload` | Bereits gestoppt/disabled aus der Migrationsphase |
+| PostgreSQL-Datenbank `honcho` + Rolle `honcho` | `DROP DATABASE`, `DROP ROLE` | Einzige Nicht-System-DB/-Rolle auf der Instanz; OpenWebUI/Hermes/Mnemosyne nutzen nachweislich kein Postgres |
+| Redis | **nicht angefasst** (Server bleibt installiert) | `dbsize: 0`, `appendonly: no` — keine Daten zu löschen; Server war zwar Honcho-exklusiv vorgesehen, aber leer, kein Cleanup nötig |
+| Systembenutzer/-gruppe `honcho` | `userdel -r` (löscht Home inkl. `.venv`, `.cache`, `.local`) | Keine laufenden Prozesse/offenen Dateien vor Löschung geprüft |
+| `/opt/companion/honcho/` (~1,2 GB: Git-Checkout, venv, uv-Cache) | Vorher als tar-Backup gesichert (Konfiguration/Code, ohne venv/Cache), dann komplett entfernt | 700-Verzeichnis, ausschließlich `honcho:honcho` |
+| `~/.hermes/honcho.json` (hermes_hugo) | gelöscht | Enthielt ausschließlich die Honcho-Verbindungs-Config |
+| Auskommentierte `HONCHO_API_KEY`-Zeile in `~/.hermes/.env` | entfernt (per `sed`, ohne den Rest der Datei zu lesen/anzuzeigen) | Inaktive Template-Zeile, keine Nutzung |
+| systemd-Unit-Dateien | `rm` + `systemctl daemon-reload` + `reset-failed` | — |
+
+**Bewusst NICHT entfernt** (kein Honcho-Eigentum, oder produktiv im
+Einsatz):
+- PostgreSQL- und Redis-**Serverpakete** selbst — waren zwar
+  nachweislich Honcho-exklusiv installiert, aber auf Nutzerentscheidung
+  hin als leere, wiederverwendbare Infrastruktur belassen (Server
+  laufen weiter, enthalten keine Honcho-Daten mehr)
+- Hermes' eigenes gebündeltes `plugins/memory/honcho`-Plugin und die
+  `honcho_ai`-Python-Bibliothek in Hermes' eigener venv — Teil der
+  Hermes-Distribution selbst, nicht unsere Installation, laut Auftrag
+  nicht anzufassen
+- Mnemosynes eigenes `core/importers/honcho.py` — Teil des
+  Mnemosyne-Pakets, nicht unsere Installation
+
+**Verifiziert nach Entfernung:** keine Honcho-Prozesse, keine
+Honcho-Services, kein Honcho-User, keine Honcho-Datenbank, keine
+Honcho-Config, keine Honcho-Plugins (außer Hermes' eigenem Bundle),
+keine Docker-Ressourcen (nie installiert), keine globalen
+Honcho-Python-Pakete. `hermes memory status` → `Provider: mnemosyne`.
+Erneuter funktionaler Test nach der Entfernung: Mnemosyne-Recall,
+Workspace/Terminal, OpenWebUI (HTTP 200), Tracing
+(`honcho_call_count: 0`, `mnemosyne_call_count` korrekt), Skills — alle
+funktionsfähig.

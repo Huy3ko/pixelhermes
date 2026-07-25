@@ -467,7 +467,8 @@ XDG_RUNTIME_DIR="/run/user/$(id -u hermes_hugo)" systemctl --user restart hermes
 ```
 Registriert sich selbst über Python `entry_points`
 (`hermes_agent.plugins`) — kein manuelles Plugin-Verzeichnis nötig.
-Honcho danach deaktiviert (nicht deinstalliert):
+Honcho danach zunächst deaktiviert (nicht deinstalliert), zur
+Verifikation:
 ```bash
 sudo systemctl stop companion-honcho-api.service companion-honcho-deriver.service
 sudo systemctl disable companion-honcho-api.service companion-honcho-deriver.service
@@ -477,11 +478,41 @@ Ende-zu-Ende-Tests, Performance-Vergleich, bekannte Grenzen, finale
 Empfehlung): [docs/hermes/MNEMOSYNE.md](docs/hermes/MNEMOSYNE.md),
 Entscheidung: [ADR 0008](ADR/0008-mnemosyne-replaces-honcho.md).
 
+## Phase Y — Honcho vollständig entfernt
+
+Nach erfolgreicher Verifikation vollständig deinstalliert:
+```bash
+# Backup vor Löschung (Konfiguration/Code, ohne .venv/.cache)
+sudo tar --exclude='honcho/honcho/.venv' --exclude='honcho/.cache' \
+  --exclude='honcho/.local' -czf ~/honcho-home-backup-$(date +%Y%m%d).tar.gz \
+  -C /opt/companion honcho
+
+# systemd
+sudo rm -f /etc/systemd/system/companion-honcho-api.service \
+            /etc/systemd/system/companion-honcho-deriver.service
+sudo systemctl daemon-reload
+
+# PostgreSQL (nur Honchos DB/Rolle — Server selbst bleibt installiert,
+# wird von nichts anderem auf diesem Host genutzt)
+sudo -u postgres psql -c "DROP DATABASE IF EXISTS honcho;"
+sudo -u postgres psql -c "DROP ROLE IF EXISTS honcho;"
+
+# Systembenutzer (löscht auch Home-Verzeichnis inkl. .venv/.cache)
+sudo userdel -r honcho
+
+# Hermes-seitige Verbindungs-Config
+sudo -u hermes_hugo rm -f ~/.hermes/honcho.json
+```
+Redis wurde geprüft (leer, `appendonly: no`, keine anderen Konsumenten)
+und unverändert installiert gelassen — Honcho hatte es nie aktiv als
+Cache genutzt (siehe [HONCHO.md](docs/hermes/HONCHO.md)). Vollständiger
+Nachweis, Vorher/Nachher-Verifikation und Freigabe-Details:
+[docs/hermes/MNEMOSYNE.md](docs/hermes/MNEMOSYNE.md#honcho-entfernung-phase-y).
+
 ## Nächste Schritte
 
 Ursache der Exa/`web_search`-Nichtnutzung klären (ggf. Upstream-Issue).
 Feature-Tests durch OpenWebUI hindurch (Uploads, Tools, Memory,
 Workspace, Sessions, Skills, Curator). `hermes_christiane` auf denselben
-Stack (Grok, Exa, Mnemosyne, lokale Embeddings) bringen. Vollständige
-Deinstallation von Honcho (aktuell nur deaktiviert). Siehe
+Stack (Grok, Exa, Mnemosyne, lokale Embeddings) bringen. Siehe
 [ROADMAP.md](ROADMAP.md).
