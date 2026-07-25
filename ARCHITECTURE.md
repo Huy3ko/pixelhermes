@@ -22,9 +22,16 @@ systemd-Services des Projekts, siehe
 [Companion Stack](#companion-stack-sprint-7) unten. Seit Phase 8.1 ist
 zusätzlich ein unverändertes, offizielles OpenWebUI über Hermes'
 OpenAI-kompatiblen API-Server verbunden — siehe
-[OpenWebUI](#openwebui-phase-81) unten. Es ist weiterhin kein mem0
-oder Humalike installiert (Humalike wurde in Sprint 7 geprüft und
-bewusst abgelehnt — siehe unten).
+[OpenWebUI](#openwebui-phase-81) unten. **Seit Phase X ist Honcho als
+aktiver Memory-Provider durch `mnemosyne-hermes` ersetzt** (in-process
+Hermes-Plugin, lokales SQLite, keine eigene Datenbank-Infrastruktur
+mehr nötig) — Honcho selbst ist deaktiviert (gestoppt, nicht
+deinstalliert), siehe [docs/hermes/MNEMOSYNE.md](docs/hermes/MNEMOSYNE.md)
+und [ADR 0008](ADR/0008-mnemosyne-replaces-honcho.md); der
+Companion-Stack-Abschnitt unten beschreibt weiterhin den historischen
+Sprint-7-Aufbau. Es ist weiterhin kein mem0 oder Humalike installiert
+(Humalike wurde in Sprint 7 geprüft und bewusst abgelehnt — siehe
+unten).
 
 ## Architekturprinzipien
 
@@ -267,6 +274,15 @@ Begründung (OpenAI und Gemini wurden explizit erwogen und verworfen).
 Kein Hermes-Kerndateien verändert — ausschließlich `hermes config set`,
 eine `honcho.json` am dokumentierten Ort, und die neuen, komplett
 separaten Systemdienste.
+
+**Historischer Stand**: Diese Tabelle beschreibt den Sprint-7-Zustand.
+Seit Phase X ist Honcho deaktiviert (`companion-honcho-api`/`-deriver`
+gestoppt und `disabled`, aber nicht deinstalliert) und
+`mnemosyne-hermes` der aktive Memory-Provider
+(`hermes doctor` → `Memory Provider: ✓ mnemosyne provider active`).
+Details, erneute Ende-zu-Ende-Verifikation und Performance-Vergleich:
+[docs/hermes/MNEMOSYNE.md](docs/hermes/MNEMOSYNE.md),
+[ADR 0008](ADR/0008-mnemosyne-replaces-honcho.md).
 
 ### Drittanbieter-Erweiterungen (Policy-Präzisierung)
 

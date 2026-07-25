@@ -456,9 +456,32 @@ Keine Inkompatibilitäten bei der eigentlichen Verbindung — nur zwei
 Konfigurationsort-Fehler auf Hermes-Seite (env statt config.yaml),
 keine Integrationsprobleme zwischen OpenWebUI und Hermes selbst.
 
+## Phase X — Mnemosyne ersetzt Honcho
+
+```bash
+# als hermes_hugo, im Hermes-venv
+pip install mnemosyne-hermes
+hermes config set memory.provider mnemosyne
+# Gateway neu starten, damit die Config-Änderung greift
+XDG_RUNTIME_DIR="/run/user/$(id -u hermes_hugo)" systemctl --user restart hermes-gateway.service
+```
+Registriert sich selbst über Python `entry_points`
+(`hermes_agent.plugins`) — kein manuelles Plugin-Verzeichnis nötig.
+Honcho danach deaktiviert (nicht deinstalliert):
+```bash
+sudo systemctl stop companion-honcho-api.service companion-honcho-deriver.service
+sudo systemctl disable companion-honcho-api.service companion-honcho-deriver.service
+```
+Vollständige Details (Architektur, Duplicate-Registration-Prüfung, 12
+Ende-zu-Ende-Tests, Performance-Vergleich, bekannte Grenzen, finale
+Empfehlung): [docs/hermes/MNEMOSYNE.md](docs/hermes/MNEMOSYNE.md),
+Entscheidung: [ADR 0008](ADR/0008-mnemosyne-replaces-honcho.md).
+
 ## Nächste Schritte
 
 Ursache der Exa/`web_search`-Nichtnutzung klären (ggf. Upstream-Issue).
 Feature-Tests durch OpenWebUI hindurch (Uploads, Tools, Memory,
-Workspace, Sessions, Skills, Curator). `hermes_christiane` auf denselben Stack (Grok, Exa, Honcho, lokale
-Embeddings) bringen. Siehe [ROADMAP.md](ROADMAP.md).
+Workspace, Sessions, Skills, Curator). `hermes_christiane` auf denselben
+Stack (Grok, Exa, Mnemosyne, lokale Embeddings) bringen. Vollständige
+Deinstallation von Honcho (aktuell nur deaktiviert). Siehe
+[ROADMAP.md](ROADMAP.md).

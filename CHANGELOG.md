@@ -3,6 +3,47 @@
 Format angelehnt an [Keep a Changelog](https://keepachangelog.com/).
 Commits folgen [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [Phase X] - 2026-07-25 - Mnemosyne ersetzt Honcho
+
+### Added
+
+- `mnemosyne-hermes` (Drittanbieter, `AxDSan/mnemosyne`, PyPI) offiziell
+  installiert (`pip install`, eigene `entry_points`-Registrierung),
+  `memory.provider` auf `mnemosyne` umgestellt — [ADR 0008](ADR/0008-mnemosyne-replaces-honcho.md),
+  [docs/hermes/MNEMOSYNE.md](docs/hermes/MNEMOSYNE.md)
+- `companion-tracing`-Plugin um eine `mnemosyne`-Tool-Kategorie
+  erweitert (`mnemosyne_call_count` im Request-Summary)
+- Alle 12 geforderten Ende-zu-Ende-Tests real durchgeführt und
+  dokumentiert (Speichern, Cross-Session-Recall, Mehrfach-Fakten,
+  Update, Workspace, OpenWebUI, Grok, Exa, Skills, Datei,
+  Session-Historie)
+- Realer Performance-Vergleich Mnemosyne vs. Honcho über das
+  Tracing-Plugin und direkte systemd-/Prozess-Messung (RAM, CPU, Tool-
+  und LLM-Latenz)
+
+### Changed
+
+- Honcho (`companion-honcho-api`/`-deriver`) gestoppt und `disabled` —
+  **nicht deinstalliert**, vollständige Entfernung ist eine eigene,
+  nachfolgende Phase
+
+### Verified
+
+- Duplicate-Registration-Frage (zwei `hermes plugins list`-Einträge)
+  per Quellcode-Analyse (`plugins/memory/__init__.py`) und empirisch
+  (Tool-Call-Trace + direkte SQLite-Abfrage der
+  `working_memory`-Tabelle) geklärt: Hooks feuern nur einmal
+- Kein offizieller Honcho→Mnemosyne-Migrationsweg vorhanden (Mnemosynes
+  eigene `comparison.md` erwähnt Honcho nicht) — dokumentiert, keine
+  Eigenentwicklung gebaut, Mnemosynes Speicher startete leer
+
+### Known limitations
+
+- Recall-Inkonsistenz bei Multi-Marker-Sammelabfragen trotz bestätigt
+  vorhandenem Datenbankeintrag (siehe MNEMOSYNE.md)
+- Exa/`web_search` weiterhin nicht zuverlässig aufgerufen — bereits
+  vorher bekannt, keine Regression durch diese Migration
+
 ## [Tracing] - 2026-07-25 - Request/Step Observability
 
 Instrumentierung und Messung only — keine Optimierungen, keine

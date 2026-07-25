@@ -232,20 +232,57 @@ erzeugen. Ausdrücklich keine Optimierung — nur messen, dokumentieren.
       nicht separat messbar — nicht vorgetäuscht
 - [x] `docs/hermes/TRACING.md` neu, Top-Level-Docs aktualisiert
 
+## Phase X — Mnemosyne ersetzt Honcho (abgeschlossen)
+
+Ziel: Honcho (Sprint 7) durch `mnemosyne-hermes` als Memory-Provider
+ersetzen, real getestet, gemessen verglichen. Ausdrücklich keine
+Eigenentwicklung für eine Honcho→Mnemosyne-Datenmigration, falls keine
+offizielle existiert.
+
+- [x] `mnemosyne-hermes` offiziell installiert (`pip install`, eigene
+      `entry_points`-Registrierung — kein manuelles Plugin nötig)
+- [x] `memory.provider` auf `mnemosyne` umgestellt, Gateway neu
+      gestartet
+- [x] Duplicate-Registration-Frage geklärt: verzeichnisbasierter
+      Loader ist nur CLI-Introspektion (Quellcode-Beleg), Hooks feuern
+      nachweislich nur einmal (Tool-Call-Trace + direkte
+      SQLite-Abfrage)
+- [x] Offiziellen Migrationsweg geprüft: keiner vorhanden (Mnemosynes
+      eigene `comparison.md` erwähnt Honcho nicht) — dokumentiert,
+      nicht selbst gebaut
+- [x] Honcho deaktiviert (gestoppt, `disabled`, nicht deinstalliert),
+      keine Honcho-Prozesse mehr aktiv
+- [x] Eigenes Tracing-Plugin um `mnemosyne`-Kategorie erweitert
+- [x] Alle 12 geforderten Ende-zu-Ende-Tests real durchgeführt (Speichern,
+      Cross-Session-Recall, Mehrfach-Fakten, Update, Workspace,
+      OpenWebUI, Grok, Exa, Skills, Datei, Session-Historie)
+- [x] Realer Performance-Vergleich: `mnemosyne_recall` ⌀29,2ms (n=40)
+      vs. `honcho_reasoning` 23.587,6ms; RAM/CPU-Fußabdruck verglichen
+      (inkl. ehrlicher Einschränkung bei nicht direkt vergleichbaren
+      CPU-Messfenstern)
+- [x] Bekannte Grenze real dokumentiert: Recall-Inkonsistenz bei
+      Multi-Marker-Sammelabfragen trotz bestätigt vorhandenem
+      DB-Eintrag
+- [x] `docs/hermes/MNEMOSYNE.md` neu, [ADR 0008](ADR/0008-mnemosyne-replaces-honcho.md),
+      Top-Level-Docs aktualisiert
+
 ## Phase 8.2+ / Sprint 8+ — geplant (noch nicht begonnen)
 
 Grobe, unverbindliche Reihenfolge — Details folgen jeweils im Sprint:
 
+- Vollständige Deinstallation von Honcho (Pakete, DB, Dienste,
+  Systembenutzer, lokale TinyLlama/Reflection/Consolidation-Modelle) —
+  eigene, nachfolgende Phase
 - Feature-Validierung durch OpenWebUI hindurch (Uploads, Tools, Memory/
-  Honcho, Workspace, Sessions, Super-Hermes-Skills, Curator) — direkte
-  Fortsetzung von Phase 8.1
+  Mnemosyne, Workspace, Sessions, Super-Hermes-Skills, Curator) —
+  direkte Fortsetzung von Phase 8.1
 - Ursache der Exa/`web_search`-Nichtnutzung klären (ggf. Upstream-Issue
   bei Nous Research melden) — vor jeder Aussage "Suche funktioniert
   produktiv"
 - Mehrtägige tatsächliche Nutzung, um Sprint 6's Bewertung zu
   vervollständigen (inkl. eines echten Curator-Laufs)
 - Hermes-Installation für `hermes_christiane` auf demselben Stack
-  (Grok, Exa, Honcho, lokale Embeddings)
+  (Grok, Exa, Mnemosyne, lokale Embeddings)
 - Produktive Skills-/MCP-Nutzung (bereits durch Hermes abgedeckt, siehe
   `docs/hermes/SKILLS.md`, `docs/hermes/MCP.md`)
 - Caddy/HTTPS/Reverse-Proxy für OpenWebUI, Multi-User-Ausbau,

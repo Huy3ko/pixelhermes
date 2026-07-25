@@ -46,3 +46,4 @@ Was folgt daraus — positiv wie negativ?
 - [0005. Bedingte Zulassung von Drittanbieter-Erweiterungen](0005-third-party-extension-policy.md)
 - [0006. OpenWebUI verbindet sich über Hermes' OpenAI-kompatiblen Endpoint](0006-openwebui-via-hermes-openai-endpoint.md)
 - [0007. Eigenes leichtgewichtiges Tracing-Plugin statt Langfuse](0007-local-tracing-plugin-not-langfuse.md)
+- [0008. Mnemosyne ersetzt Honcho als Memory-Provider](0008-mnemosyne-replaces-honcho.md)
