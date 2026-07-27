@@ -3,6 +3,27 @@
 Format angelehnt an [Keep a Changelog](https://keepachangelog.com/).
 Commits folgen [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [Unreleased] - 2026-07-27 - Google Workspace Skill recherchiert
+
+### Added
+
+- `docs/hermes/GOOGLE_WORKSPACE.md`: vollständige Recherche zum
+  offiziellen `google-workspace`-Skill (bereits einer der 65 builtin
+  Skills, kein MCP, kein zusätzliches Plugin) — OAuth-/PKCE-Flow,
+  Redirect-URI `http://localhost:1`, sechs benötigte Google-Cloud-APIs,
+  dienstspezifische Scopes, Token-Ablage unter `~/.hermes/`
+- `OVERVIEW.md`, `ROADMAP.md`, `README.md` um Verweis ergänzt
+
+### Explicitly not done
+
+- Google-Cloud-OAuth-Client-Erstellung, Registrierung auf dem realen
+  `hermes_hugo`-Host, Login-Link-Erzeugung, Autorisierung,
+  Funktionsverifikation — erfordert eine Google-Kontoanmeldung des
+  Nutzers und realen Host-Zugriff, beides außerhalb dieser
+  Repository-only-Sitzung. Kein fingierter Login-Link ausgegeben.
+
+Details: [docs/hermes/GOOGLE_WORKSPACE.md](docs/hermes/GOOGLE_WORKSPACE.md).
+
 ## [Phase Y] - 2026-07-25 - Honcho vollständig entfernt
 
 ### Removed
