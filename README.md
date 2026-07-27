@@ -42,6 +42,12 @@ Ausdrücklich **weiterhin nicht** eingerichtet:
 - Hermes-Installation für `hermes_christiane` (Konto existiert bereits;
   Mnemosyne/Embedding-Server sind bereits für spätere Mitnutzung ausgelegt)
 
+Zusätzlich recherchiert, aber nicht aktiviert: der offizielle
+`google-workspace`-Skill (Gmail, Calendar, Drive, Sheets, Docs) ist
+bereits als builtin Skill vorhanden — Aktivierung erfordert eine
+Google-Cloud-Console-Aktion und realen Host-Zugriff, beides außerhalb
+des Recherche-Umfangs. Details: [docs/hermes/GOOGLE_WORKSPACE.md](docs/hermes/GOOGLE_WORKSPACE.md).
+
 Details siehe [ROADMAP.md](ROADMAP.md).
 
 ## Architekturprinzipien

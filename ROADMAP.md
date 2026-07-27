@@ -308,6 +308,38 @@ ausschließlich Honcho gehörte.
 - [x] `docs/hermes/MNEMOSYNE.md` und [ADR 0008](ADR/0008-mnemosyne-replaces-honcho.md)
       um Entfernungs-Nachweis ergänzt
 
+## Google Workspace Skill — recherchiert, Aktivierung aussteht (abgeschlossen im Recherche-Umfang)
+
+Ziel: prüfen, ob und wie Google Workspace (Gmail, Calendar, Drive,
+Sheets, Docs) über die offizielle Hermes-Integration aktiviert werden
+kann, ausschließlich offiziell unterstützt, kein Workaround, kein
+Drittanbieter-Plugin.
+
+- [x] Audit: `google-workspace` ist bereits einer der 65 real
+      beobachteten builtin Skills (Phase 4, Kategorie `productivity`) —
+      kein MCP-Server, kein Skill-Hub-Install, kein zusätzliches Plugin
+      nötig
+- [x] Offizielle Doku recherchiert: OAuth-2.0/PKCE-Flow über
+      `scripts/setup.py`/`scripts/google_api.py`, feste Redirect-URI
+      `http://localhost:1` (kein realer lokaler Webserver, Copy/Paste-
+      Abschluss), sechs benötigte Google-Cloud-APIs, dienstspezifische
+      Scopes über `--services`, Token-Ablage unter `~/.hermes/`
+- [x] `docs/hermes/GOOGLE_WORKSPACE.md` neu, `OVERVIEW.md` aktualisiert
+- [ ] **Nicht durchgeführt und nicht durchführbar aus dieser Sitzung:**
+      OAuth-Client-Erstellung in der Google Cloud Console (erfordert
+      Google-Kontoanmeldung des Nutzers), Registrierung auf dem realen
+      `hermes_hugo`-Host, Login-Link-Erzeugung, Autorisierung,
+      Funktionsverifikation je Dienst — diese Sitzung hatte
+      ausschließlich Zugriff auf dieses Git-Repository, keinen
+      Shell-/SSH-Zugriff auf den produktiven Host und kein Google-Konto
+      des Nutzers. Konkrete Schritte für den Nutzer selbst: siehe
+      [docs/hermes/GOOGLE_WORKSPACE.md](docs/hermes/GOOGLE_WORKSPACE.md#nächste-schritte--nur-real-durch-den-nutzer-ausführbar)
+
+Ausdrücklich nicht Teil dieses Punkts: irgendeine Aktivierung,
+Konfiguration oder ein erzeugter Login-Link ohne reale Ausführung auf
+dem produktiven Host — passend zum Projektgrundsatz "real getestet,
+nicht vorgetäuscht".
+
 ## Phase 8.2+ / Sprint 8+ — geplant (noch nicht begonnen)
 
 Grobe, unverbindliche Reihenfolge — Details folgen jeweils im Sprint:
